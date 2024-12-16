@@ -19,17 +19,12 @@ public final class ImmutableMatrix {
         return data[i][j];
     }
     
-    public ImmutableMatrix add(ImmutableMatrix other) {
-        if(data.length != other.data.length || data[0].length != other.data[0].length) {
-            throw new IllegalArgumentException("矩阵维度不匹配");
-        }
-        double[][] result = deepCopy(data);
-        for(int i = 0; i < data.length; i++) {
-            for(int j = 0; j < data[0].length; j++) {
-                result[i][j] += other.data[i][j];
-            }
-        }
-        return new ImmutableMatrix(result);
+    public int getRows() {
+        return data.length;
+    }
+    
+    public int getCols() {
+        return data[0].length;
     }
     
     public MutableMatrix toMutable() {
