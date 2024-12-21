@@ -1,5 +1,6 @@
 package components;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -8,8 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -18,98 +22,89 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JTextPane;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.BorderFactory;
-import java.awt.Color;
 /**
  * 聊天室大厅
  * @author 22145
  */
 public class Room extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	//设置聊天室标题
-	JFrame jf=new JFrame("聊天室");
-	//声明变量
-	public Client soc;
-	public PrintWriter pw;
-	//创建面板
-	public JPanel jp1=new JPanel();//面板1
-	public JPanel jp2=new JPanel();//面板2
-	public JPanel jp3=new JPanel();//面板3
-	public JPanel jp4=new JPanel();//面板4
-	public JPanel jp5=new JPanel();//面板5
-	public JPanel jp6=new JPanel();//面板6
-	public JPanel jp7=new JPanel();//面板7
-	//设置文本框
-	public static JTextPane jta1 = new JTextPane();
-	public static JTextPane jta2 = new JTextPane();
-	//添加相应文本汉字
-	public JLabel jl1=new JLabel("对");
-	//设置下拉菜单
-	public static JComboBox<String> jcomb=new JComboBox<String>();
-	//设置发送聊天框长度
-	public JTextArea jtf = new JTextArea(8, 20);  // 替换原来的JTextField
-	//添加发送按钮
-	public JButton jb1=new JButton("发送>>");
-	//添加刷新按钮
-	public JButton jb2=new JButton("刷新");
-	public static DefaultListModel<Object> listModel1 = new DefaultListModel<>();
-	public static JList<Object> lst1 = new JList<>(listModel1);
-	//声明变量
-	public String na;
-	public String se;
-	public String message;
-	// 添加个人信息面板
-	public JPanel jpUserInfo = new JPanel();
-	public JLabel lblUserTitle = new JLabel("个人信息");
-	public JLabel lblUsername = new JLabel();
-	public JLabel lblGender = new JLabel();
-	public JLabel lblNoFriends = new JLabel("目前暂时无好友在线", SwingConstants.CENTER);
-	// 在类成员变量中添加
+	// 主窗口
+	JFrame mainFrame = new JFrame("聊天室");
+	// 客户端连接相关
+	public Client clientSocket;
+	public PrintWriter writer;
+	
+	// 面板组件
+	public JPanel userInfoPanel = new JPanel();    // 原jp1
+	public JPanel messagePanel = new JPanel();     // 原jp2
+	public JPanel friendListPanel = new JPanel();  // 原jp3
+	public JPanel chatPanel = new JPanel();        // 原jp4
+	public JPanel mainChatPanel = new JPanel();    // 原jp5
+	public JPanel onlineFriendsPanel = new JPanel(); // 原jp6
+	public JPanel mainContentPanel = new JPanel();   // 原jp7
+	
+	// 聊天区域
+	public static JTextPane mainChatArea = new JTextPane();  // 原jta1
+	public static JTextPane privateChatArea = new JTextPane(); // 原jta2
+	
+	// 发送相关组件
+	public JLabel toLabel = new JLabel("对");      // 原jl1
+	public static JComboBox<String> receiverSelect = new JComboBox<>(); // 原jcomb
+	public JTextArea messageInput = new JTextArea(8, 20);    // 原jtf
+	public JButton sendButton = new JButton("发送>>");       // 原jb1
+	public JButton refreshButton = new JButton("刷新");      // 原jb2
+	
+	// 好友列表相关
+	public static DefaultListModel<Object> friendsListModel = new DefaultListModel<>(); // 原listModel1
+	public static JList<Object> friendsList = new JList<>(friendsListModel);  // 原lst1
+	
+	// 用户信息
+	public String username;           // 原na
+	public String gender;            // 原se
+	public String currentMessage;    // 原message
+	
+	// 个人信息面板组件
+	public JPanel personalInfoPanel = new JPanel();  // 原jpUserInfo
+	public JLabel personalInfoTitle = new JLabel("个人信息"); // 原lblUserTitle
+	public JLabel usernameLabel = new JLabel();      // 原lblUsername
+	public JLabel genderLabel = new JLabel();        // 原lblGender
+	public JLabel noFriendsLabel = new JLabel("目前暂时无好友在线", SwingConstants.CENTER); // 原lblNoFriends
 	public JButton exitButton = new JButton("退出");
 /**显示聊天界面*/
 public void getMenu(String name, String sex) {
 	//添加全部聊天
-	jcomb.addItem("所有人");
-	this.na = name;
-	this.se = sex;
+	receiverSelect.addItem("所有人");
+	this.username = name;
+	this.gender = sex;
 	
 	//设置文本框不可编辑
-	jta1.setEditable(false);
-	jta2.setEditable(false);
+	mainChatArea.setEditable(false);
+	privateChatArea.setEditable(false);
 	
 	// 确保发送消息的文本框可编辑
-	jtf.setEditable(true);
-	jtf.setEnabled(true);
+	messageInput.setEditable(true);
+	messageInput.setEnabled(true);
 	
 	// 设置窗口基本属性
-	jf.setSize(1400, 800);
-	jf.setLocationRelativeTo(null);  // 居中显示
-	jf.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	jf.setResizable(false);
+	mainFrame.setSize(1400, 800);
+	mainFrame.setLocationRelativeTo(null);  // 居中显示
+	mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	mainFrame.setResizable(false);
 	
 	// 配置左侧面板
 	JPanel jpLeft = new JPanel();
 	jpLeft.setLayout(new BorderLayout());
 	
 	// 个人信息面板
-	jpUserInfo.setLayout(new GridLayout(2, 1, 5, 5));
-	jpUserInfo.setBorder(new TitledBorder("个人信息"));
-	lblUsername.setText("账号: " + name);
-	lblGender.setText("性别: " + sex);
-	jpUserInfo.add(lblUsername);
-	jpUserInfo.add(lblGender);
+	personalInfoPanel.setLayout(new GridLayout(2, 1, 5, 5));
+	personalInfoPanel.setBorder(new TitledBorder("个人信息"));
+	usernameLabel.setText("账号: " + name);
+	genderLabel.setText("性别: " + sex);
+	personalInfoPanel.add(usernameLabel);
+	personalInfoPanel.add(genderLabel);
 	
 	// 发送消息面板
 	JPanel jpSend = new JPanel();
@@ -118,25 +113,25 @@ public void getMenu(String name, String sex) {
 	
 	// 选择发送对象面板，使用FlowLayout让组件紧凑排列
 	JPanel jpSelect = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));  // 减小间距
-	jpSelect.add(jl1);
-	jpSelect.add(jcomb);
-	jcomb.setPreferredSize(new Dimension(150, 25));
+	jpSelect.add(toLabel);
+	jpSelect.add(receiverSelect);
+	receiverSelect.setPreferredSize(new Dimension(150, 25));
 	
 	// 文本框面板
 	JPanel jpText = new JPanel(new BorderLayout());
-	JScrollPane textScrollPane = new JScrollPane(jtf);
+	JScrollPane textScrollPane = new JScrollPane(messageInput);
 	textScrollPane.setPreferredSize(new Dimension(200, 100));
 	jpText.add(textScrollPane, BorderLayout.CENTER);
 	
 	// 在发送消息面板中添加按钮面板
 	JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
-	jb1.setPreferredSize(new Dimension(100, 30));  // 发送按钮
-	jb2.setPreferredSize(new Dimension(80, 30));   // 刷新按钮
+	sendButton.setPreferredSize(new Dimension(100, 30));  // 发送按钮
+	refreshButton.setPreferredSize(new Dimension(80, 30));   // 刷新按钮
 	exitButton.setPreferredSize(new Dimension(80, 30));  // 退出按钮
 
-	buttonPanel.add(jb1);
+	buttonPanel.add(sendButton);
 	buttonPanel.add(Box.createHorizontalStrut(5));
-	buttonPanel.add(jb2);
+	buttonPanel.add(refreshButton);
 	buttonPanel.add(Box.createHorizontalStrut(5));
 	buttonPanel.add(exitButton);
 
@@ -148,64 +143,64 @@ public void getMenu(String name, String sex) {
 	jpSend.add(buttonPanel);  // 添加按钮面板
 	
 	// 组装左侧面板
-	jpLeft.add(jpUserInfo, BorderLayout.NORTH);
+	jpLeft.add(personalInfoPanel, BorderLayout.NORTH);
 	jpLeft.add(jpSend, BorderLayout.CENTER);
 	
 	// 设置聊天区域和好友列表面板的布局
-	jp5.setLayout(new BorderLayout());  // 改用BorderLayout
-	jp6.setLayout(new BorderLayout());  // 改用BorderLayout
+	mainChatPanel.setLayout(new BorderLayout());  // 改用BorderLayout
+	onlineFriendsPanel.setLayout(new BorderLayout());  // 改用BorderLayout
 
 	// 设置滚动面板，让它填充整个区域
-	JScrollPane jsp1 = new JScrollPane(jta1);
-	JScrollPane jsp2 = new JScrollPane(jta2);
-	JScrollPane jsp3 = new JScrollPane(lst1);
+	JScrollPane mainChatScroll = new JScrollPane(mainChatArea);
+	JScrollPane privateChatScroll = new JScrollPane(privateChatArea);
+	JScrollPane friendsListScroll = new JScrollPane(friendsList);
 
 	// 设置边框
-	jsp1.setBorder(BorderFactory.createTitledBorder("主聊天频道"));
-	jsp2.setBorder(BorderFactory.createTitledBorder("我的频道"));
-	jsp3.setBorder(BorderFactory.createTitledBorder("在线好友列表"));
+	mainChatScroll.setBorder(BorderFactory.createTitledBorder("主聊天频道"));
+	privateChatScroll.setBorder(BorderFactory.createTitledBorder("我的频道"));
+	friendsListScroll.setBorder(BorderFactory.createTitledBorder("在线好友列表"));
 
 	// 组装面板
-	jp1.setLayout(new GridLayout(2, 1, 0, 0));  // 移除间距
-	jp1.add(jsp1);
-	jp1.add(jsp2);
+	userInfoPanel.setLayout(new GridLayout(2, 1, 0, 0));  // 移除间距
+	userInfoPanel.add(mainChatScroll);
+	userInfoPanel.add(privateChatScroll);
 
 	// 将面板添加到各自的容器中，使用BorderLayout.CENTER让它们填充整个空间
-	jp5.add(jp1, BorderLayout.CENTER);
-	jp6.add(jsp3, BorderLayout.CENTER);
+	mainChatPanel.add(userInfoPanel, BorderLayout.CENTER);
+	onlineFriendsPanel.add(friendsListScroll, BorderLayout.CENTER);
 	
 	// 设置各面板大小
 	jpLeft.setPreferredSize(new Dimension(280, 750));
-	jp5.setPreferredSize(new Dimension(900, 750));
-	jp6.setPreferredSize(new Dimension(270, 750));
+	mainChatPanel.setPreferredSize(new Dimension(900, 750));
+	onlineFriendsPanel.setPreferredSize(new Dimension(270, 750));
 	
 	// 设置主面板布局，移除面板间距
-	jp7.setLayout(new BorderLayout(0, 0));  // 将间距���为0
-	jp7.add(jpLeft, BorderLayout.WEST);
-	jp7.add(jp5, BorderLayout.CENTER);
-	jp7.add(jp6, BorderLayout.EAST);
+	mainContentPanel.setLayout(new BorderLayout(0, 0));  // 将间距为0
+	mainContentPanel.add(jpLeft, BorderLayout.WEST);
+	mainContentPanel.add(mainChatPanel, BorderLayout.CENTER);
+	mainContentPanel.add(onlineFriendsPanel, BorderLayout.EAST);
 	
 	// 移除边框和内边距
-	jp5.setBorder(null);
-	jp6.setBorder(null);
-	jp7.setBorder(null);
+	mainChatPanel.setBorder(null);
+	onlineFriendsPanel.setBorder(null);
+	mainContentPanel.setBorder(null);
 
 	// 设置滚动面板的边框样式更简洁
-	jsp1.setBorder(BorderFactory.createTitledBorder(
+	mainChatScroll.setBorder(BorderFactory.createTitledBorder(
 	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "主聊天频道"));
-	jsp2.setBorder(BorderFactory.createTitledBorder(
+	privateChatScroll.setBorder(BorderFactory.createTitledBorder(
 	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "我的频道"));
-	jsp3.setBorder(BorderFactory.createTitledBorder(
+	friendsListScroll.setBorder(BorderFactory.createTitledBorder(
 	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "在线好友列表"));
 
 	
 	// 添加到主窗口并显示
-	jf.add(jp7);
-	jf.setVisible(true);  // 置窗口可
+	mainFrame.add(mainContentPanel);
+	mainFrame.setVisible(true);  // 置窗口可
 	
 	// 添加按钮监听器
-	jb1.addActionListener(this);
-	jb2.addActionListener(this);
+	sendButton.addActionListener(this);
+	refreshButton.addActionListener(this);
 	// 添加退出按钮监听器
 	exitButton.addActionListener(this);
 }
@@ -213,41 +208,41 @@ public void getMenu(String name, String sex) {
 public void sock(){
 	try{
 		//将用户信息保存成字符串形式
-		String user=na+"("+se+")";
+		String user=username+"("+gender+")";
 		//创建客户端对象
-		soc=new Client(user);
+		clientSocket=new Client(user);
 		//创建输出流
-		pw=new PrintWriter(Client.socket.getOutputStream());
+		writer=new PrintWriter(Client.socket.getOutputStream());
 		//发送好友列表标识
-		pw.println("好友列表");
+		writer.println("好友列表");
 		//发送用户信息
-		pw.println(na+":"+se);
+		writer.println(username+":"+gender);
 		//将内存中的数据次性输出
-		pw.flush();
+		writer.flush();
 		//发送进入聊天室标识
-		pw.println("进入聊天室");
+		writer.println("进入聊天室");
 		//发送进入聊天室信息
-		pw.println("【"+na+"】"+"进入聊天室");
+		writer.println("【"+username+"】"+"进入聊天室");
 		//将内存中的数据一次性输出
-		pw.flush();
+		writer.flush();
 	}catch(Exception e){
 		e.printStackTrace();
 	}
 }
 /**设置窗口关闭事件，如果点击窗口右上角叉号关闭，执行下边程序*/
 public Room() {
-	jf.addWindowListener(new WindowAdapter(){
+	mainFrame.addWindowListener(new WindowAdapter(){
 		public void windowClosing(WindowEvent e){
 			try {
 				//创建输出流
-				pw=new PrintWriter(Client.socket.getOutputStream());
+				writer=new PrintWriter(Client.socket.getOutputStream());
 				//发送下线标识
-				pw.println("下线");
+				writer.println("下线");
 				//发送下线信息
-				pw.println(na+":离开聊天室");
+				writer.println(username+":离开聊天室");
 				//将内存中的数据一次性输出
-				pw.flush();
-				jf.dispose();//关闭窗口
+				writer.flush();
+				mainFrame.dispose();//关闭窗口
 			}catch(Exception ex) {
 				
 			}
@@ -257,53 +252,53 @@ public Room() {
 /**事件触发*/
 public void actionPerformed(ActionEvent event){
 	//获取发送，刷新按钮
-	jb1.setText("发送>>");
-	jb2.setText("刷新");
+	sendButton.setText("发送>>");
+	refreshButton.setText("刷新");
 	try{
 		//创建输出流
-		pw=new PrintWriter(Client.socket.getOutputStream());
+		writer=new PrintWriter(Client.socket.getOutputStream());
 		//点击发送触发
 		if(event.getActionCommand().equals("发送>>")){
-			if(!jtf.getText().equals("")){
-				String selectedUser = (String)jcomb.getSelectedItem();
+			if(!messageInput.getText().equals("")){
+				String selectedUser = (String)receiverSelect.getSelectedItem();
 				if(!"所有人".equals(selectedUser)){
 					// 私聊
-					message = na + "(" + se + ")" + "对" + selectedUser + "说：" + jtf.getText();
-					pw.println("私聊");
-					pw.println(na + ":" + selectedUser + "分开" + message);
-					pw.flush();
+					currentMessage = username + "(" + gender + ")" + "对" + selectedUser + "说：" + messageInput.getText();
+					writer.println("私聊");
+					writer.println(username + ":" + selectedUser + "分开" + currentMessage);
+					writer.flush();
 				} else {
 					// 群聊
-					pw.println("聊天");
-					pw.println(na + "说：" + jtf.getText());
-					pw.flush();
+					writer.println("聊天");
+					writer.println(username + "说：" + messageInput.getText());
+					writer.flush();
 				}
 			}
 		//点击刷新触发
 		}else if(event.getActionCommand().equals("刷新")){
 			//创建输出流
-			pw=new PrintWriter(Client.socket.getOutputStream());
+			writer=new PrintWriter(Client.socket.getOutputStream());
 			//发送刷新识
-			pw.println("刷新");
+			writer.println("刷新");
 			//将内存中数据一次性输出
-			pw.flush();
+			writer.flush();
 			}
 		// 处理退出按钮
 		if (event.getSource() == exitButton) {
 			// 发送下线消息
-			pw.println("下线");
-			pw.println(na + ":离开聊天室");
-			pw.flush();
+			writer.println("下线");
+			writer.println(username + ":离开聊天室");
+			writer.flush();
 			// 关闭窗口
-			jf.dispose();
+			mainFrame.dispose();
 			return;
 		}
 	}catch(Exception ex){
 		ex.printStackTrace();
 	}
 	//空输栏信息
-	jtf.setText("");
+	messageInput.setText("");
 	//输入焦点
-	jtf.requestFocus();
+	messageInput.requestFocus();
 	}
 }

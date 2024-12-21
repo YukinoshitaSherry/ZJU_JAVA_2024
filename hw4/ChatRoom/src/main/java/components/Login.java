@@ -29,55 +29,52 @@ import javax.swing.border.TitledBorder;
 
 /**
  * 登录界面
- * @author 22145
  */
 class Landen extends Frame implements ActionListener{
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	//数据库连接对象
-	public static Connection conn =null;
+	public static Connection dbConnection = null;
 	//sql执行对象
-	public static PreparedStatement ps = null;
+	public static PreparedStatement dbStatement = null;
 	//处理结果集对象
-	public static ResultSet rs =null;
+	public static ResultSet dbResult = null;
 	
 	//设置聊天标题
-	JFrame jf=new JFrame("登录窗口");
+	JFrame loginFrame = new JFrame("登录窗口");
 	
 	//添加汉字到面板
-	JLabel jl1=new JLabel("用户名：");
-	JLabel jl2=new JLabel("密码    ：");
-	JLabel jl3=new JLabel("请选择性别：");
+	JLabel usernameLabel = new JLabel("用户名：");
+	JLabel passwordLabel = new JLabel("密码    ：");
+	JLabel genderLabel = new JLabel("请选择性别：");
 	
 	
 	//将性别选项添加到面板中并设置按钮
-	static JRadioButton jrb1=new JRadioButton("男性");
-	static JRadioButton jrb2=new JRadioButton("女性");
-	static JRadioButton jrb3=new JRadioButton("其它");
+	static JRadioButton maleButton = new JRadioButton("男性");
+	static JRadioButton femaleButton = new JRadioButton("女性");
+	static JRadioButton otherButton = new JRadioButton("其它");
 	
 	
 	//设置用户名输入框长度
-	JTextField jtf1=new JTextField(20);
+	JTextField usernameInput = new JTextField(20);
 	
 	//设置密码输入框长度
-	JPasswordField jtf2=new JPasswordField(20);
+	JPasswordField passwordInput = new JPasswordField(20);
 	
 	//将连接按钮添加到面板
-	JButton jb1=new JButton("登录");
+	JButton loginButton = new JButton("登录");
 	
 	//将断开按钮添加到面板
-	JButton jb2=new JButton("断开");
+	JButton disconnectButton = new JButton("断开");
 	
 	//将注册按钮添加到面板
-	JButton jb3=new JButton("注册");
+	JButton registerButton = new JButton("注册");
 	
 	//设置标题边框
-	TitledBorder tb=new TitledBorder("");
+	TitledBorder titleBorder = new TitledBorder("");
 	
 	//设置单选
-	ButtonGroup gb=new ButtonGroup();
+	ButtonGroup genderGroup = new ButtonGroup();
 	
 	/**
 	 * 显示登录界面
@@ -92,13 +89,13 @@ class Landen extends Frame implements ActionListener{
 		JLabel label = new JLabel(bg);
 		//设置背景图片大小
 		label.setSize(800,600);
-		jf.getLayeredPane().add(label, new Integer(Integer.MIN_VALUE));
+		loginFrame.getLayeredPane().add(label, new Integer(Integer.MIN_VALUE));
 		
 		//把窗口面板设为内容面板并设为透明，流动布局
-		JPanel pan = (JPanel) jf.getContentPane();
+		JPanel pan = (JPanel) loginFrame.getContentPane();
 		pan.setOpaque(false);  // 设置为透明
 		pan.setLayout(new FlowLayout());
-		jf.setLayout(null);
+		loginFrame.setLayout(null);
 		
 		
 		/**用户名**/
@@ -112,17 +109,13 @@ class Landen extends Frame implements ActionListener{
 		//设置颜色
 		username.setForeground(Color.WHITE);
 		
-		/*
-		 * 这个方法定义了组件的位置。 setBounds(x, y, width, height) x 和 y 指定左上角的新位置，由 width 和 height
-		 * 指定新的大小。
-		 */
 		//用户名
 		username.setBounds(200, 100, 120, 30);
 		
 		//用户名输入框
-		jtf1.setBounds(350, 100, 250, 30);
+		usernameInput.setBounds(350, 100, 250, 30);
 		pan.add(username);
-		pan.add(jtf1);
+		pan.add(usernameInput);
 		
 		/**密码**/
 		JLabel password = new JLabel("密   码：");
@@ -136,9 +129,9 @@ class Landen extends Frame implements ActionListener{
 		//密码
 		password.setBounds(200, 250, 120, 30);
 		//密码输入框
-		jtf2.setBounds(350, 250, 250, 30);
+		passwordInput.setBounds(350, 250, 250, 30);
 		pan.add(password);
-		pan.add(jtf2);
+		pan.add(passwordInput);
 		
 		
 		/**选择性别**/
@@ -153,62 +146,62 @@ class Landen extends Frame implements ActionListener{
 		Font f2 = new Font("宋体",Font.PLAIN,15);
 
 		
-		jrb1.setFont(f2);
-		jrb2.setFont(f2);
-		jrb3.setFont(f2);
-		jrb1.setForeground(Color.WHITE);
-		jrb2.setForeground(Color.WHITE);
-		jrb3.setForeground(Color.WHITE);
+		maleButton.setFont(f2);
+		femaleButton.setFont(f2);
+		otherButton.setFont(f2);
+		maleButton.setForeground(Color.WHITE);
+		femaleButton.setForeground(Color.WHITE);
+		otherButton.setForeground(Color.WHITE);
 		//选择性别按钮
-		jrb1.setBounds(350, 400, 80, 30);
-		jrb2.setBounds(450, 400, 80, 30);
-		jrb3.setBounds(550, 400, 80, 30);
-		jrb1.setOpaque(false);
-		jrb2.setOpaque(false);
-		jrb3.setOpaque(false);
-		pan.add(jrb1);
-		pan.add(jrb2);
-		pan.add(jrb3);
+		maleButton.setBounds(350, 400, 80, 30);
+		femaleButton.setBounds(450, 400, 80, 30);
+		otherButton.setBounds(550, 400, 80, 30);
+		maleButton.setOpaque(false);
+		femaleButton.setOpaque(false);
+		otherButton.setOpaque(false);
+		pan.add(maleButton);
+		pan.add(femaleButton);
+		pan.add(otherButton);
 		//登录按钮
-		jb1.setBounds(250, 500, 100, 35);
-		pan.add(jb1);	
+		loginButton.setBounds(250, 500, 100, 35);
+		pan.add(loginButton);	
 		//注册按钮
-		jb3.setBounds(400, 500, 100, 35);
-		pan.add(jb3);
+		registerButton.setBounds(400, 500, 100, 35);
+		pan.add(registerButton);
 		//设置按钮为单选
-		gb.add(jrb1);
-		gb.add(jrb2);
-		gb.add(jrb3);
+		genderGroup.add(maleButton);
+		genderGroup.add(femaleButton);
+		genderGroup.add(otherButton);
 		//设置默认显示位置
-		jf.setLocation(800,300);//初始位置
+		loginFrame.setLocation(800,300);//初始位置
 		
 		//设置聊天登录框大小
-		jf.setSize(800, 600);
+		loginFrame.setSize(800, 600);
 		
 		//设置此窗体是否可由用户调整大小。
-		jf.setResizable(false);
+		loginFrame.setResizable(false);
 		
 		//关闭聊天登录框时自动关闭程序
-		jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		loginFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		//将聊天登录框在windows桌面显示
-		jf.setVisible(true);
+		loginFrame.setVisible(true);
 		
 		//添加图标
-		jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
-//		jf.setLocationRelativeTo(null);
-//		jf.repaint();
+		loginFrame.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
+//		loginFrame.setLocationRelativeTo(null);
+//		loginFrame.repaint();
 		//添加监听
-		jb1.addActionListener(this);//登录按钮
-		jb3.addActionListener(this);//注册按钮
+		loginButton.addActionListener(this);//登录按钮
+		registerButton.addActionListener(this);//注册按钮
 		
 	}
 	
 	/**登录事件*/
 	@SuppressWarnings("deprecation")
 	public void actionPerformed(ActionEvent event){
-		String aa = jtf1.getText();
-		String bb = jtf2.getText();
+		String aa = usernameInput.getText();
+		String bb = passwordInput.getText();
 		
 		if(event.getActionCommand().equals("登录")){
 			System.out.println("点击登录按钮");
@@ -221,15 +214,15 @@ class Landen extends Frame implements ActionListener{
 				JOptionPane.showMessageDialog(null,"请输入密码！");
 				return;
 			}
-			if(!jrb1.isSelected() && !jrb2.isSelected() && !jrb3.isSelected()){
+			if(!maleButton.isSelected() && !femaleButton.isSelected() && !otherButton.isSelected()){
 				JOptionPane.showMessageDialog(null,"请选择性别！");
 				return;
 			}
 			
 			try {
 				System.out.println("尝试连接数据库...");
-				conn = DBUtils.getConn();
-				if(conn == null) {
+				dbConnection = DBUtils.getConn();
+				if(dbConnection == null) {
 					System.out.println("数据库连接失败: DBUtils.getConn() 返回 null");
 					JOptionPane.showMessageDialog(null, "数据库连接失败: 无法获取连接");
 					return;
@@ -237,26 +230,27 @@ class Landen extends Frame implements ActionListener{
 				System.out.println("数据库连接成功!");
 				
 				String sql = "select * from user where username=? and password=?";
-				ps = conn.prepareStatement(sql);
-				ps.setString(1, aa);
-				ps.setString(2, bb);
+				dbStatement = dbConnection.prepareStatement(sql);
+				dbStatement.setString(1, aa);
+				dbStatement.setString(2, bb);
 				System.out.println("执行SQL查询: " + sql);
 				System.out.println("用户名: " + aa);
 				System.out.println("密码: " + bb);
 				
-				rs = ps.executeQuery();
+				
+				dbResult = dbStatement.executeQuery();
 				System.out.println("查询完成，检查结果...");
 				
-				if(rs.next()) {
+				if(dbResult.next()) {
 					System.out.println("登录成功，准备打开聊天室...");
-					jf.setVisible(false);
-					String s1 = jrb1.isSelected() ? "boy" : 
-							   jrb2.isSelected() ? "girl" : "non-binary";
+					loginFrame.setVisible(false);
+					String s1 = maleButton.isSelected() ? "boy" : 
+							   femaleButton.isSelected() ? "girl" : "non-binary";
 					
-					Room gmu = new Room();
-					gmu.getMenu(aa, s1);
+					Room chatroom = new Room();
+					chatroom.getMenu(aa, s1);
 					System.out.println("聊天室界面创建完成，准备建立连接...");
-					gmu.sock();
+					chatroom.sock();
 					System.out.println("聊天室连接建立完成");
 				} else {
 					System.out.println("用户名或密码错误");
@@ -267,13 +261,13 @@ class Landen extends Frame implements ActionListener{
 				System.out.println("发生异常: " + e.getMessage());
 				JOptionPane.showMessageDialog(null, "登录失败: " + e.getMessage());
 			} finally {
-				DBUtils.close(conn, ps, rs);
+				DBUtils.close(dbConnection, dbStatement, dbResult);
 			}
 		}
 		//如果点击注册则跳转注册页面
 		if(event.getActionCommand().equals("注册")){
 			//用来显示/隐藏GUI组件的
-			jf.dispose();
+			loginFrame.dispose();
 			new Register();
 		}
 	}

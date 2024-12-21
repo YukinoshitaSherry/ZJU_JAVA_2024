@@ -33,9 +33,9 @@ public class Server extends Frame implements ActionListener{
 	String bg10="src/main/java/img/register.jpg";
 	String start="src/main/java/img/start.gif";
 	//启动服务器窗口
-	JFrame jf = new JFrame("启动服务端");
+	JFrame serverFrame = new JFrame();
 	//服务器监听窗口
-	JFrame jf2 = new JFrame("启动监听");
+	JFrame statusFrame = new JFrame();
 	//将图片添加到标签里
 	ImageIcon bg=new ImageIcon(bg10);
 	JLabel label=new JLabel(bg);
@@ -73,36 +73,36 @@ public class Server extends Frame implements ActionListener{
 		label2.setBounds(0, 0, 800, 600);
 		
 		// 将背景添加到最底层
-		jf2.getLayeredPane().add(label2, new Integer(Integer.MIN_VALUE));
+		statusFrame.getLayeredPane().add(label2, new Integer(Integer.MIN_VALUE));
 		
 		// 获取内容面板并设置为透明
-		JPanel contentPane = (JPanel) jf2.getContentPane();
+		JPanel contentPane = (JPanel) statusFrame.getContentPane();
 		contentPane.setOpaque(false);
 		contentPane.setLayout(new FlowLayout());
 		
 		// 设置窗口布局为null以支持绝对定位
-		jf2.setLayout(null);
+		statusFrame.setLayout(null);
 		
 		//不透明流动窗口
-		JPanel p2 = (JPanel) jf2.getContentPane();
-		p2.setOpaque(false);
-		p2.setLayout(new FlowLayout());
-		jf2.setLayout(null);
+		JPanel statusPanel = (JPanel) statusFrame.getContentPane();
+		statusPanel.setOpaque(false);
+		statusPanel.setLayout(new FlowLayout());
+		statusFrame.setLayout(null);
 		//退出服务器按钮
 		jb2.setBounds(170,210,120,50);
-		p2.add(jb2);
+		statusPanel.add(jb2);
 		//设置默认显示位置
-		jf2.setLocation(800,290);//初始位置
+		statusFrame.setLocation(800,290);//初始位置
 		//设置聊天登录框大小
-		jf2.setSize(480, 320);
+		statusFrame.setSize(480, 320);
 		//设置此窗体可由用户调整大小。
-		jf2.setResizable(false);
+		statusFrame.setResizable(false);
 		//关闭聊天登录框时自动关闭程序
-		jf2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		statusFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//将聊天登录框在windows桌面显示
-		jf2.setVisible(true);
+		statusFrame.setVisible(true);
 		//添加图标
-		jf2.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
+		statusFrame.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 		//添加监听
 		jb2.addActionListener(this);//退出服务器按钮
 		jb2.setText("关闭服务器");
@@ -114,13 +114,13 @@ public class Server extends Frame implements ActionListener{
 		ImageIcon bg = new ImageIcon(inputbg);
 		label.setIcon(bg);
 		label.setSize(800,600);
-		jf.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE));
+		serverFrame.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE));
 		
 		// 其他代码保持不变
-		JPanel p = (JPanel) jf.getContentPane();
-		p.setOpaque(false);
-		p.setLayout(new FlowLayout());
-		jf.setLayout(null);
+		JPanel mainPanel = (JPanel) serverFrame.getContentPane();
+		mainPanel.setOpaque(false);
+		mainPanel.setLayout(new FlowLayout());
+		serverFrame.setLayout(null);
 		
 		/**端口**/
 		JLabel start = new JLabel("端口号：");
@@ -131,28 +131,28 @@ public class Server extends Frame implements ActionListener{
 		start.setForeground(Color.BLACK);
 		start.setBounds(180,100,80,25);
 		jtf.setBounds(260, 100, 40, 30);
-		p.add(start);
-		p.add(jtf);
+		mainPanel.add(start);
+		mainPanel.add(jtf);
 		jtf.setText("8088");
 		/**启动按钮**/
 		jb.setBounds(180, 160, 120, 50);
 		//添加退出按钮
 		JButton exitButton = new JButton("退出");
 		exitButton.setBounds(320, 160, 120, 50);
-		p.add(exitButton);
-		p.add(jb);
+		mainPanel.add(exitButton);
+		mainPanel.add(jb);
 		//设置默认显示位置
-		jf.setLocation(800,300);//初始位置
+		serverFrame.setLocation(800,300);//初始位置
 		//设置聊天登录框大小
-		jf.setSize(800, 600);
+		serverFrame.setSize(800, 600);
 		//设置此窗体是否可由用户调整大小。
-		jf.setResizable(false);
+		serverFrame.setResizable(false);
 		//关闭聊天登录框时自动关闭程序
-		jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		serverFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//将聊天登录框在windows桌面显示
-		jf.setVisible(true);
+		serverFrame.setVisible(true);
 		//添加图标
-		jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
+		serverFrame.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 		//添加监听
 		jb.addActionListener(this);//启动服务器按钮
 		exitButton.addActionListener(this);
@@ -161,109 +161,110 @@ public class Server extends Frame implements ActionListener{
 		new Server(user).initdemo();
 	}
 	class Chat implements Runnable{
-		Socket socket;
-		private BufferedReader br;
-		private String msg;
-		private String mssg="";
+		private Socket clientSocket;
+		private BufferedReader reader;
+		private String currentMessage;
+		private String messageBuffer = "";
+		
 		public Chat(Socket socket){
 			try{
-				this.socket=socket;
+				this.clientSocket=socket;
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
 	public void run(){
 		try{
-			br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			while((msg=br.readLine())!=null){
+			reader=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			while((currentMessage=reader.readLine())!=null){
 				//匹配字符串 显示好友列表
-				if(msg.equals("好友列表")){
-					msg=br.readLine();
+				if(currentMessage.equals("好友列表")){
+					currentMessage=reader.readLine();
 					//将用户信息跟消息分隔开
-					String[] st=msg.split(":");
+					String[] userInfo=currentMessage.split(":");
 					//将用户信息添加到User对象中
-					uu=new User(st[0],st[1],socket);
+					uu=new User(userInfo[0],userInfo[1],clientSocket);
 					//将对象添加到用户集合
 					list1.add(uu);
 					//遍历用户集合
 					Iterator<User> it=Server.list1.iterator();
 					while(it.hasNext()){
 						User use=it.next();
-						msg=use.getUsername()+"("+use.getPassword()+"):";
+						currentMessage=use.getUsername()+"("+use.getPassword()+"):";
 						//将所有的用户信息连接成一个字符串
-						mssg+=msg;
+						messageBuffer+=currentMessage;
 						}
 					//显示好友列表匹配标识
 					sendMessage("好友列表");
 					//群发消息
-					sendMessage(mssg);
+					sendMessage(messageBuffer);
 					//显示说话消息
-					}else if(msg.equals("聊天")){
-						msg=br.readLine();
-						System.out.println(msg);
+					}else if(currentMessage.equals("聊天")){
+						currentMessage=reader.readLine();
+						System.out.println(currentMessage);
 						//显示说话信息匹配标识
 						sendMessage("聊天");
-						sendMessage(msg);
+						sendMessage(currentMessage);
 						//显示进入聊天室
-					}else if(msg.equals("进入聊天室")){
-						msg=br.readLine();
-						System.out.println(msg);
+					}else if(currentMessage.equals("进入聊天室")){
+						currentMessage=reader.readLine();
+						System.out.println(currentMessage);
 						//进入聊天室匹配标识
 						sendMessage("进入聊天室");
-						sendMessage(msg);
+						sendMessage(currentMessage);
 						//私聊
-					}else if(msg.equals("私聊")){
-						msg=br.readLine();
+					}else if(currentMessage.equals("私聊")){
+						currentMessage=reader.readLine();
 						//把传进来的用户信息跟说话内容分开
-						String[] rt=msg.split("分开");
+						String[] privateInfo=currentMessage.split("分开");
 						//在服务器端显示说话内容
-						System.out.println(rt[1]);
+						System.out.println(privateInfo[1]);
 						//因为是私聊，传过来两个用户的用户信息，这句作用是再把两个用户信息分开
-						String[] tg=rt[0].split(":");
+						String[] targetInfo=privateInfo[0].split(":");
 						//遍历用户集合
 						Iterator<User> iu=Server.list1.iterator();
 						while(iu.hasNext()){
 							User se=iu.next();
 							//如果传进来的用户信息跟集合中的用户信息吻合
-							if(tg[1].equals(se.getUsername()+"("+se.getPassword()+")")){
+							if(targetInfo[1].equals(se.getUsername()+"("+se.getPassword()+")")){
 								try{
 									//建立用户自己的流
 									PrintWriter pwriter=new PrintWriter(se.getSock().getOutputStream());
 									//匹配标识
 									pwriter.println("私聊");
 									//向单独用户发送消息
-									pwriter.println(rt[1]);
+									pwriter.println(privateInfo[1]);
 									pwriter.flush();
-									System.out.println(rt[1]);
+									System.out.println(privateInfo[1]);
 								}catch(Exception e){
 									e.printStackTrace();
 								}
 							//如果传进来的用户信息跟集合中的用户信息吻合
-							}else if(tg[0].equals(se.getUsername())){
+							}else if(targetInfo[0].equals(se.getUsername())){
 								try{
 									PrintWriter pwr=new PrintWriter(se.getSock().getOutputStream());//建立用自己的流
 									//匹标识
 									pwr.println("私聊");
 									//向单独用户发送消息
-									pwr.println(rt[1]);
+									pwr.println(privateInfo[1]);
 									pwr.flush();
-									System.out.println(rt[1]);
+									System.out.println(privateInfo[1]);
 								}catch(Exception e){
 									e.printStackTrace();
 								}
 							}
 						}
 					//下线
-					}else if(msg.equals("下线")){
-						msg=br.readLine();
+					}else if(currentMessage.equals("下线")){
+						currentMessage=reader.readLine();
 						//在服务端显示信息
-						System.out.println(msg);
+						System.out.println(currentMessage);
 						//匹配字符串
 						sendMessage("下线");
 						//匹配完毕后群发消息
-						sendMessage(msg);
-						//将传过来的用户名跟信息分隔开
-						String[] si=msg.split(":");
+						sendMessage(currentMessage);
+						//将传过来的同户名跟信息分隔开
+						String[] si=currentMessage.split(":");
 						//遍历用户集合
 						Iterator<User> at=Server.list1.iterator();
 						while(at.hasNext()){
@@ -278,15 +279,15 @@ public class Server extends Frame implements ActionListener{
 						}
 						break;
 					//刷新
-					}else if(msg.equals("刷新")){
+					}else if(currentMessage.equals("刷新")){
 						String mssge="";
 						//遍历户集合
 						Iterator<User> iter=Server.list1.iterator();
 						while(iter.hasNext()){
 							User uus=iter.next();
-							msg=uus.getUsername()+"("+uus.getPassword()+"):";
+							currentMessage=uus.getUsername()+"("+uus.getPassword()+"):";
 							//将所有的用户信息连接成一个字符串
-							mssge+=msg;
+							mssge+=currentMessage;
 						}
 						//发送刷新匹配标识
 						sendMessage("刷新");
@@ -322,10 +323,10 @@ public class Server extends Frame implements ActionListener{
 			ImageIcon newIcon = new ImageIcon(newImage);
 
 			//设置窗口图标
-			jf.setIconImage(newIcon.getImage());
+			serverFrame.setIconImage(newIcon.getImage());
 
 			//修改提示框显示
-			jf.setVisible(false);
+			serverFrame.setVisible(false);
 			JOptionPane.showMessageDialog(
 				null,
 				"服务器正在启动....", 
@@ -348,7 +349,7 @@ public class Server extends Frame implements ActionListener{
 					t.start();
 				}
 			}catch(Exception e1){
-				jf2.setVisible(false);
+				statusFrame.setVisible(false);
 				JOptionPane.showMessageDialog(this, "服务器启动错误","服务器启动错误",0);
 			}
 		} else if (e.getSource() instanceof JButton && ((JButton)e.getSource()).getText().equals("退出")) {

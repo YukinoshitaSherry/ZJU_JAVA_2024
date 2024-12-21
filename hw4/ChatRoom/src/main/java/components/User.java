@@ -1,11 +1,7 @@
 package components;
 
-import java.net.*;
-/**
- * 实体类
- * @author 22145
- *
- */
+import java.net.Socket;
+
 class User{
 	//用户姓名
 	private String username;
