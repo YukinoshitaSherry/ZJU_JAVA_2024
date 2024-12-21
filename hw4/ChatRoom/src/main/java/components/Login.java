@@ -207,60 +207,69 @@ class Landen extends Frame implements ActionListener{
 	/**登录事件*/
 	@SuppressWarnings("deprecation")
 	public void actionPerformed(ActionEvent event){
-		String aa=jtf1.getText();
-		String bb=jtf2.getText();
-		//定义s1为空
-		String s1=null;
-			//读取连接，断开按钮
-			jb1.setText("登录");
-			jb3.setText("注册");
-			jb2.setText("断开");
+		String aa = jtf1.getText();
+		String bb = jtf2.getText();
+		
+		if(event.getActionCommand().equals("登录")){
+			System.out.println("点击登录按钮");
+			
+			if(aa.equals("")){
+				JOptionPane.showMessageDialog(null,"请输入用户名！");
+				return;
+			}
+			if(bb.equals("")) {
+				JOptionPane.showMessageDialog(null,"请输入密码！");
+				return;
+			}
+			if(!jrb1.isSelected() && !jrb2.isSelected() && !jrb3.isSelected()){
+				JOptionPane.showMessageDialog(null,"请选择性别！");
+				return;
+			}
+			
 			try {
-				//获取连接
+				System.out.println("尝试连接数据库...");
 				conn = DBUtils.getConn();
-				//编写sql语句
+				if(conn == null) {
+					System.out.println("数据库连接失败: DBUtils.getConn() 返回 null");
+					JOptionPane.showMessageDialog(null, "数据库连接失败: 无法获取连接");
+					return;
+				}
+				System.out.println("数据库连接成功!");
+				
 				String sql = "select * from user where username=? and password=?";
 				ps = conn.prepareStatement(sql);
-				ps.setString(1,aa);
-				ps.setString(2,bb);
-			    rs=ps.executeQuery();
-					//添加监听器，如果点击注册是没有
-					//如果登录成功则启动程序
-					//添加监听器，如果点击连接时没有选择用户名与则会提示信息重新填写
-					if(event.getActionCommand().equals("登录")){
-						if(jtf1.getText().equals("")){
-							JOptionPane.showMessageDialog(null,"请输入用户名！");
-						}else if(jtf2.getText().equals("")) {
-							JOptionPane.showMessageDialog(null,"请输入密码！");
-						}else if(!jrb1.isSelected()&&!jrb2.isSelected()&&!jrb3.isSelected()){
-							JOptionPane.showMessageDialog(null,"请选择性别！");
-						}else if(rs.next()) {
-							//用来显示/隐藏GUI组件的
-							jf.setVisible(false);
-							//用来显示聊天大厅性别
-							if(jrb1.isSelected()){
-								s1="boy";
-							}else if(jrb2.isSelected()){
-								s1="girl";
-							}else if(jrb3.isSelected()){
-								s1="secret";
-							}
-							//定义G_Menu对象
-							Room gmu=new Room();
-							//显示大厅用户名(性别)
-							gmu.getMenu(jtf1.getText(),s1);
-							//调用G_Menu对象中的sock方法
-							gmu.sock();	
-							DBUtils.close(conn, ps, rs);
-						}else {
-							JOptionPane.showMessageDialog(null,"用户名或密码错误!");
-						}
-					}
-					}catch (Exception e) {
-						e.printStackTrace();
-					}finally {
-						DBUtils.close(conn, ps, rs);
-					}
+				ps.setString(1, aa);
+				ps.setString(2, bb);
+				System.out.println("执行SQL查询: " + sql);
+				System.out.println("用户名: " + aa);
+				System.out.println("密码: " + bb);
+				
+				rs = ps.executeQuery();
+				System.out.println("查询完成，检查结果...");
+				
+				if(rs.next()) {
+					System.out.println("登录成功，准备打开聊天室...");
+					jf.setVisible(false);
+					String s1 = jrb1.isSelected() ? "boy" : 
+							   jrb2.isSelected() ? "girl" : "secret";
+					
+					Room gmu = new Room();
+					gmu.getMenu(aa, s1);
+					System.out.println("聊天室界面创建完成，准备建立连接...");
+					gmu.sock();
+					System.out.println("聊天室连接建立完成");
+				} else {
+					System.out.println("用户名或密码错误");
+					JOptionPane.showMessageDialog(null,"用户名或密码错误!");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("发生异常: " + e.getMessage());
+				JOptionPane.showMessageDialog(null, "登录失败: " + e.getMessage());
+			} finally {
+				DBUtils.close(conn, ps, rs);
+			}
+		}
 		//如果点击注册则跳转注册页面
 		if(event.getActionCommand().equals("注册")){
 			//用来显示/隐藏GUI组件的
