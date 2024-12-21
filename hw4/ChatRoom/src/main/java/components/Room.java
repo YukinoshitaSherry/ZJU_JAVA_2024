@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
-
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,6 +25,11 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JTextPane;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.BadLocationException;
 /**
  * 聊天室大厅
  * @author 22145
@@ -46,8 +50,8 @@ public class Room extends JFrame implements ActionListener{
 	public JPanel jp6=new JPanel();//面板6
 	public JPanel jp7=new JPanel();//面板7
 	//设置文本框
-	public static JTextArea jta1=new JTextArea(18,60);//主文本框
-	public static JTextArea jta2=new JTextArea(18,60);//我的频道
+	public static JTextPane jta1 = new JTextPane();
+	public static JTextPane jta2 = new JTextPane();
 	//添加相应文本汉字
 	public JLabel jl1=new JLabel("对");
 	//设置下拉菜单
@@ -116,8 +120,6 @@ public void getMenu(String name, String sex) {
 	
 	// 文本框面板
 	JPanel jpText = new JPanel(new BorderLayout());
-	jtf.setLineWrap(true);                 // 启用自动换行
-	jtf.setWrapStyleWord(true);            // 按单词换行
 	JScrollPane textScrollPane = new JScrollPane(jtf);
 	textScrollPane.setPreferredSize(new Dimension(200, 100));
 	jpText.add(textScrollPane, BorderLayout.CENTER);
@@ -141,11 +143,11 @@ public void getMenu(String name, String sex) {
 	// 设置聊天区域
 	jp1.setLayout(new GridLayout(2, 1, 0, 5));
 	
+	// 设置JTextPane的自动换行
+	jta1.putClientProperty("JTextPane.w3cLineBreak", Boolean.TRUE);
+	jta2.putClientProperty("JTextPane.w3cLineBreak", Boolean.TRUE);
+	
 	// 设置滚动面板
-	jta1.setLineWrap(true);                    // 启用自动换行
-	jta1.setWrapStyleWord(true);               // 按单词换行
-	jta2.setLineWrap(true);
-	jta2.setWrapStyleWord(true);
 	JScrollPane jsp1 = new JScrollPane(jta1, 
 	    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 	    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -182,7 +184,7 @@ public void getMenu(String name, String sex) {
 	jb1.addActionListener(this);
 	jb2.addActionListener(this);
 }
-/**启动聊天室窗口*/
+/**启动聊天室口*/
 public void sock(){
 	try{
 		//将用户信息保存成字符串形式
@@ -195,7 +197,7 @@ public void sock(){
 		pw.println("好友列表");
 		//发送用户信息
 		pw.println(na+":"+se);
-		//将内存中的数据���次性输出
+		//将内存中的数据次性输出
 		pw.flush();
 		//发送进入聊天室标识
 		pw.println("进入聊天室");
