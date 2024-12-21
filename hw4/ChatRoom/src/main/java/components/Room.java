@@ -24,6 +24,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 /**
  * 聊天室大厅
  * @author 22145
@@ -35,7 +37,7 @@ public class Room extends JFrame implements ActionListener{
 	//声明变量
 	public Client soc;
 	public PrintWriter pw;
-	//创建面板
+	//创建面���
 	public JPanel jp1=new JPanel();//面板1
 	public JPanel jp2=new JPanel();//面板2
 	public JPanel jp3=new JPanel();//面板3
@@ -51,7 +53,7 @@ public class Room extends JFrame implements ActionListener{
 	//设置下拉菜单
 	public static JComboBox<String> jcomb=new JComboBox<String>();
 	//设置发送聊天框长度
-	public JTextField jtf=new JTextField(36);
+	public JTextArea jtf = new JTextArea(8, 20);  // 替换原来的JTextField
 	//添加发送按钮
 	public JButton jb1=new JButton("发送>>");
 	//添加刷新按钮
@@ -103,27 +105,33 @@ public void getMenu(String name, String sex) {
 	
 	// 发送消息面板
 	JPanel jpSend = new JPanel();
-	jpSend.setLayout(new GridLayout(3, 1, 5, 5));
+	jpSend.setLayout(new BoxLayout(jpSend, BoxLayout.Y_AXIS));
 	jpSend.setBorder(new TitledBorder("发送消息"));
 	
-	// 选择发送对象
-	JPanel jpSelect = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	// 选择发送对象面板，使用FlowLayout让组件紧凑排列
+	JPanel jpSelect = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));  // 减小间距
 	jpSelect.add(jl1);
 	jpSelect.add(jcomb);
+	jcomb.setPreferredSize(new Dimension(150, 25));
 	
 	// 文本框面板
 	JPanel jpText = new JPanel(new BorderLayout());
-	jtf.setPreferredSize(new Dimension(180, 800));
-	jpText.add(jtf, BorderLayout.CENTER);
+	jtf.setLineWrap(true);                 // 启用自动换行
+	jtf.setWrapStyleWord(true);            // 按单词换行
+	JScrollPane textScrollPane = new JScrollPane(jtf);
+	textScrollPane.setPreferredSize(new Dimension(200, 100));
+	jpText.add(textScrollPane, BorderLayout.CENTER);
 	
 	// 按钮面板
 	JPanel jpButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	jpButtons.add(jb1);
 	jpButtons.add(jb2);
 	
-	// 添加到发送消息面板
+	// 组装面板，减小垂直间距
 	jpSend.add(jpSelect);
+	jpSend.add(Box.createVerticalStrut(2));  // 减小间距
 	jpSend.add(jpText);
+	jpSend.add(Box.createVerticalStrut(2));  // 减小间距
 	jpSend.add(jpButtons);
 	
 	// 组装左侧面板
@@ -160,7 +168,7 @@ public void getMenu(String name, String sex) {
 	
 	// 添加到主窗口并显示
 	jf.add(jp7);
-	jf.setVisible(true);  // 置窗口可见
+	jf.setVisible(true);  // 置窗口可
 	
 	// 添加按钮监听器
 	jb1.addActionListener(this);
@@ -248,7 +256,7 @@ public void actionPerformed(ActionEvent event){
 	}catch(Exception ex){
 		ex.printStackTrace();
 	}
-	//清空输入栏信息
+	//空输栏信息
 	jtf.setText("");
 	//输入焦点
 	jtf.requestFocus();
