@@ -251,7 +251,7 @@ class Landen extends Frame implements ActionListener{
 					System.out.println("登录成功，准备打开聊天室...");
 					jf.setVisible(false);
 					String s1 = jrb1.isSelected() ? "boy" : 
-							   jrb2.isSelected() ? "girl" : "secret";
+							   jrb2.isSelected() ? "girl" : "non-binary";
 					
 					Room gmu = new Room();
 					gmu.getMenu(aa, s1);

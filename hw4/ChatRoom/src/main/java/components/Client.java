@@ -61,11 +61,18 @@ class Recove implements Runnable{
 					message=br.readLine();
 					//将接收到的所有用户信息分隔开
 					String[] str=message.split(":");
+					boolean hasOnlineFriends = false;
 					for(String ss:str){
-						//将所有用户信息添加到好友列表
-						Room.listModel1.addElement(ss);
-						//将所有用户信息添加到JCombox
-						Room.jcomb.addItem(ss);
+						//不显示自己
+						if(!ss.equals(user)) {
+							Room.listModel1.addElement(ss);
+							Room.jcomb.addItem(ss);
+							hasOnlineFriends = true;
+						}
+					}
+					//如果没有其他在线用户,显示提示信息
+					if(!hasOnlineFriends) {
+						Room.listModel1.addElement("目前暂时无好友在线");
 					}
 				/**私聊*/
 				}else if(message.equals("私聊")){
