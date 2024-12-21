@@ -29,7 +29,7 @@ public class Register extends JFrame implements ActionListener {
 	public static PreparedStatement ps = null;
 	//处理结果集对象
 	public static ResultSet rs =null;
-	String inputbg="src/main/java/img/bg1.gif";
+	String inputbg="src/main/java/img/register.jpg";
 	/**********************定义各控件********************************/
     JFrame jf=new JFrame("注册窗口");
     //将图片添加到标签
@@ -41,9 +41,9 @@ public class Register extends JFrame implements ActionListener {
     private static JPasswordField pfPassword=new JPasswordField(10);
     //确认密码输入框
     private JPasswordField pfPassword2=new JPasswordField(10);
-    //定义注册按钮与返回登陆按钮
+    //定义注册按钮与返回登录按钮
     private JButton btRegister=new JButton("注册");
-    private JButton btExit=new JButton("返回登陆");
+    private JButton btExit=new JButton("返回登录");
     /**界面初始化*/
     public Register() {
         super("注册");
@@ -57,11 +57,11 @@ public class Register extends JFrame implements ActionListener {
     	pan2.setLayout(null);
     	/**请输入用户名**/
     	JLabel username = new JLabel("用 户 名 ：");
-    	Font font = new Font("微软雅黑", Font.PLAIN, 20);
+    	Font font = new Font("宋体", Font.PLAIN, 20);
     	//设置字体
     	username.setFont(font);
     	//设置颜色
-    	username.setForeground(Color.WHITE);
+    	username.setForeground(Color.BLACK);
     	//请输入用户名
     	username.setBounds(110,50,150,25);
     	//用户名输入框
@@ -71,7 +71,7 @@ public class Register extends JFrame implements ActionListener {
     	/**请输入密码**/
     	JLabel password = new JLabel("密     码 ：");
     	password.setFont(font);
-    	password.setForeground(Color.WHITE);
+    	password.setForeground(Color.BLACK);
     	//请输入密码
     	password.setBounds(110,100,180,25);
     	//密码输入框
@@ -81,7 +81,7 @@ public class Register extends JFrame implements ActionListener {
     	/**请再次输入密码**/
     	JLabel password2 = new JLabel("确认密码：");
     	password2.setFont(font);
-    	password2.setForeground(Color.WHITE);
+    	password2.setForeground(Color.BLACK);
     	//请再次输入密码
     	password2.setBounds(110,150,180,25);
     	//密码输入框
@@ -91,19 +91,19 @@ public class Register extends JFrame implements ActionListener {
     	//注册按钮
     	btRegister.setBounds(110,250,80,30);
     	pan2.add(btRegister);
-    	//返回登陆按钮
+    	//返回登录按钮
     	btExit.setBounds(280,250,120,30);
     	pan2.add(btRegister);
     	jf.setLocation(800,300);//初始位置
         jf.setSize(480,400);//窗口大小
         jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
-        jf.add(btExit);//返回登陆按钮
+        jf.add(btExit);//返回登录按钮
         jf.setResizable(false);//不可编辑
         jf.setVisible(true);//桌面显示
         
         /**增加监听*/
         btRegister.addActionListener(this);//注册按钮监听
-        btExit.addActionListener(this);//返回登陆按钮监听
+        btExit.addActionListener(this);//返回登录按钮监听
     }
     
     /**
@@ -148,7 +148,7 @@ public class Register extends JFrame implements ActionListener {
 						int rows=ps.executeUpdate();
 						if(rows!= 0) {
 							JOptionPane.showMessageDialog(this,"注册成功");
-							//返回登陆页面
+							//返回登录页面
 							jf.dispose();
 							//用来显示/隐藏GUI组件的
 							new Landen().init();
@@ -159,9 +159,9 @@ public class Register extends JFrame implements ActionListener {
 			}
     }
     if (e.getSource()==btExit) {
-    /**当点击返回登陆按钮时会返回输出谢谢光临*/
+    /**当点击返回登录按钮时会返回输出谢谢光临*/
     	JOptionPane.showMessageDialog(this,"谢谢光临");
-        //返回登陆页面
+        //返回登录页面
         jf.dispose();
         new Landen().init();
 	}

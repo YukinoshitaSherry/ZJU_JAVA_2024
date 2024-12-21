@@ -12,7 +12,7 @@ import javax.swing.*;
 public class Server extends Frame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	//定义图片位置
-	String bg10="src/main/java/img/bg2.jpeg";
+	String bg10="src/main/java/img/register.jpg";
 	String start="src/main/java/img/start.gif";
 	//启动服务器窗口
 	JFrame jf = new JFrame("服务端启动");
@@ -59,13 +59,13 @@ public class Server extends Frame implements ActionListener{
 		p2.add(jb2);
 		//设置默认显示位置
 		jf2.setLocation(800,290);//初始位置
-		//设置聊天登陆框大小
+		//设置聊天登录框大小
 		jf2.setSize(480, 320);
 		//设置此窗体是否可由用户调整大小。
 		jf2.setResizable(false);
-		//关闭聊天登陆框时自动关闭程序
+		//关闭聊天登录框时自动关闭程序
 		jf2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//将聊天登陆框在windows桌面显示
+		//将聊天登录框在windows桌面显示
 		jf2.setVisible(true);
 		//添加图标
 		jf2.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
@@ -76,7 +76,7 @@ public class Server extends Frame implements ActionListener{
 	/**显示启动服务端页面**/
 	public void initdemo() {
 		/**启动背景**/
-		label.setSize(480,400);
+		label.setSize(800,600);
 		jf.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE));
 		//把窗口面板设为内容面板并设为透明，流动布局
 		JPanel p = (JPanel) jf.getContentPane();
@@ -85,7 +85,7 @@ public class Server extends Frame implements ActionListener{
 		jf.setLayout(null);
 		/**端口**/
 		JLabel start = new JLabel("端口号：");
-		Font f=new Font("微软雅黑",Font.PLAIN,20);
+		Font f=new Font("宋体",Font.PLAIN,20);
 		//设置字体
 		start.setFont(f);
 		//设置颜色
@@ -100,13 +100,13 @@ public class Server extends Frame implements ActionListener{
 		p.add(jb);
 		//设置默认显示位置
 		jf.setLocation(800,300);//初始位置
-		//设置聊天登陆框大小
-		jf.setSize(480, 400);
+		//设置聊天登录框大小
+		jf.setSize(800, 600);
 		//设置此窗体是否可由用户调整大小。
 		jf.setResizable(false);
-		//关闭聊天登陆框时自动关闭程序
+		//关闭聊天登录框时自动关闭程序
 		jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//将聊天登陆框在windows桌面显示
+		//将聊天登录框在windows桌面显示
 		jf.setVisible(true);
 		//添加图标
 		jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
