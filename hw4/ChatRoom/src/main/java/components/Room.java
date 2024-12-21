@@ -30,6 +30,8 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.BadLocationException;
+import javax.swing.BorderFactory;
+import java.awt.Color;
 /**
  * 聊天室大厅
  * @author 22145
@@ -140,42 +142,53 @@ public void getMenu(String name, String sex) {
 	jpLeft.add(jpUserInfo, BorderLayout.NORTH);
 	jpLeft.add(jpSend, BorderLayout.CENTER);
 	
-	// 设置聊天区域
-	jp1.setLayout(new GridLayout(2, 1, 0, 5));
-	
-	// 设置JTextPane的自动换行
-	jta1.putClientProperty("JTextPane.w3cLineBreak", Boolean.TRUE);
-	jta2.putClientProperty("JTextPane.w3cLineBreak", Boolean.TRUE);
-	
-	// 设置滚动面板
-	JScrollPane jsp1 = new JScrollPane(jta1, 
-	    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-	    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-	JScrollPane jsp2 = new JScrollPane(jta2,
-	    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-	    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	// 设置聊天区域和好友列表面板的布局
+	jp5.setLayout(new BorderLayout());  // 改用BorderLayout
+	jp6.setLayout(new BorderLayout());  // 改用BorderLayout
+
+	// 设置滚动面板，让它填充整个区域
+	JScrollPane jsp1 = new JScrollPane(jta1);
+	JScrollPane jsp2 = new JScrollPane(jta2);
 	JScrollPane jsp3 = new JScrollPane(lst1);
-	
-	jsp1.setBorder(new TitledBorder("主聊天频道"));
-	jsp2.setBorder(new TitledBorder("我的频道"));
-	jsp3.setBorder(new TitledBorder("在线好友列表"));
-	
+
+	// 设置边框
+	jsp1.setBorder(BorderFactory.createTitledBorder("主聊天频道"));
+	jsp2.setBorder(BorderFactory.createTitledBorder("我的频道"));
+	jsp3.setBorder(BorderFactory.createTitledBorder("在线好友列表"));
+
+	// 组装面板
+	jp1.setLayout(new GridLayout(2, 1, 0, 0));  // 移除间距
 	jp1.add(jsp1);
 	jp1.add(jsp2);
-	jp5.add(jp1);
-	jp6.add(jsp3);
+
+	// 将面板添加到各自的容器中，使用BorderLayout.CENTER让它们填充整个空间
+	jp5.add(jp1, BorderLayout.CENTER);
+	jp6.add(jsp3, BorderLayout.CENTER);
 	
 	// 设置各面板大小
 	jpLeft.setPreferredSize(new Dimension(250, 750));
-	jp5.setPreferredSize(new Dimension(700, 750));
+	jp5.setPreferredSize(new Dimension(900, 750));
 	jp6.setPreferredSize(new Dimension(300, 750));
 	
-	// 设置主面板布局
-	jp7.setLayout(new BorderLayout(10, 0));
+	// 设置主面板布局，移除面板间距
+	jp7.setLayout(new BorderLayout(0, 0));  // 将间距设为0
 	jp7.add(jpLeft, BorderLayout.WEST);
 	jp7.add(jp5, BorderLayout.CENTER);
 	jp7.add(jp6, BorderLayout.EAST);
 	
+	// 移除边框和内边距
+	jp5.setBorder(null);
+	jp6.setBorder(null);
+	jp7.setBorder(null);
+
+	// 设置滚动面板的边框样式更简洁
+	jsp1.setBorder(BorderFactory.createTitledBorder(
+	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "主聊天频道"));
+	jsp2.setBorder(BorderFactory.createTitledBorder(
+	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "我的频道"));
+	jsp3.setBorder(BorderFactory.createTitledBorder(
+	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "在线好友列表"));
+
 	// 添加到主窗口并显示
 	jf.add(jp7);
 	jf.setVisible(true);  // 置窗口可
@@ -245,7 +258,7 @@ public void actionPerformed(ActionEvent event){
 					// 私聊
 					message = "私聊" + na + "(" + se + ")" + "对" + selectedUser + "说：" + jtf.getText();
 					pw.println("私聊");
-					pw.println(na + ":" + selectedUser + "分开" + message);
+					pw.println(na + ":" + selectedUser + "��开" + message);
 					pw.flush();
 				} else {
 					// 群聊
