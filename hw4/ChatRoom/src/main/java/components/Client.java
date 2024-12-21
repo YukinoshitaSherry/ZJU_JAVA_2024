@@ -111,7 +111,8 @@ class Recove implements Runnable{
 					message=br.readLine();
 					//在服务器端显示私聊消息
 					System.out.println("收到："+message);
-					//在我的频道显示私聊信息
+					//在两个频道都显示私聊信息
+					appendToPane(Room.jta1, message, RED);
 					appendToPane(Room.jta2, message, RED);
 				/**显示说话信息*/
 				}else if(message.equals("聊天")){

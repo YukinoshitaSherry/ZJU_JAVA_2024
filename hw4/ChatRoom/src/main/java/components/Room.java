@@ -256,9 +256,9 @@ public void actionPerformed(ActionEvent event){
 				String selectedUser = (String)jcomb.getSelectedItem();
 				if(!"所有人".equals(selectedUser)){
 					// 私聊
-					message = "私聊" + na + "(" + se + ")" + "对" + selectedUser + "说：" + jtf.getText();
+					message = na + "(" + se + ")" + "对" + selectedUser + "说：" + jtf.getText();
 					pw.println("私聊");
-					pw.println(na + ":" + selectedUser + "��开" + message);
+					pw.println(na + ":" + selectedUser + "分开" + message);
 					pw.flush();
 				} else {
 					// 群聊
