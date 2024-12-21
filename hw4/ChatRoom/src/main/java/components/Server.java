@@ -33,7 +33,7 @@ public class Server extends Frame implements ActionListener{
 	String bg10="src/main/java/img/register.jpg";
 	String start="src/main/java/img/start.gif";
 	//启动服务器窗口
-	JFrame jf = new JFrame("服务端启动");
+	JFrame jf = new JFrame("启动服务端");
 	//服务器监听窗口
 	JFrame jf2 = new JFrame("启动监听");
 	//将图片添加到标签里

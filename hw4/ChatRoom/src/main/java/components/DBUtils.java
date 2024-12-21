@@ -8,15 +8,6 @@ import java.sql.Statement;
 
 import org.junit.Test;
 
-/*
- * JDBC的工具类
- * 
- * 由于在使用JDBC时要频繁的创建连接
- * 以及关闭资源等操作。
- * 故而我们可以将重复的操作利用抽象的
- * 概念提取出来，组成一个新的类。
- * 
- */
 public class DBUtils {
 
 	//连接资源
@@ -34,8 +25,8 @@ public class DBUtils {
 			//password:数据库的密码
 			//异常 ：SQLException
 			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/lts?useUnicode=true&characterEncoding=utf-8", 
-					"root", "123456");
+					"jdbc:mysql://localhost:3306/chat_db", 
+					"root", "csq1006yzy"); //change your password
 			System.out.println(conn);
 			conn.createStatement();
 		} catch (Exception e) {
