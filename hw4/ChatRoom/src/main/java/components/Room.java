@@ -37,7 +37,7 @@ public class Room extends JFrame implements ActionListener{
 	//声明变量
 	public Client soc;
 	public PrintWriter pw;
-	//创建面���
+	//创建面板
 	public JPanel jp1=new JPanel();//面板1
 	public JPanel jp2=new JPanel();//面板2
 	public JPanel jp3=new JPanel();//面板3
@@ -142,8 +142,16 @@ public void getMenu(String name, String sex) {
 	jp1.setLayout(new GridLayout(2, 1, 0, 5));
 	
 	// 设置滚动面板
-	JScrollPane jsp1 = new JScrollPane(jta1);
-	JScrollPane jsp2 = new JScrollPane(jta2);
+	jta1.setLineWrap(true);                    // 启用自动换行
+	jta1.setWrapStyleWord(true);               // 按单词换行
+	jta2.setLineWrap(true);
+	jta2.setWrapStyleWord(true);
+	JScrollPane jsp1 = new JScrollPane(jta1, 
+	    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+	    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	JScrollPane jsp2 = new JScrollPane(jta2,
+	    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+	    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 	JScrollPane jsp3 = new JScrollPane(lst1);
 	
 	jsp1.setBorder(new TitledBorder("主聊天频道"));
@@ -187,7 +195,7 @@ public void sock(){
 		pw.println("好友列表");
 		//发送用户信息
 		pw.println(na+":"+se);
-		//将内存中的数据一次性输出
+		//将内存中的数据���次性输出
 		pw.flush();
 		//发送进入聊天室标识
 		pw.println("进入聊天室");

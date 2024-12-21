@@ -13,6 +13,8 @@ public class Client{
 private static final int PORT=1234;
 public static String user;
 public static Socket socket;
+private String message;
+private String na;
 
 public Client(String user){
 	Client.user=user;
@@ -38,10 +40,13 @@ class Recove implements Runnable{
 	public BufferedReader br;
 	private String msg;
 	Room gm=new Room();
+	private String username;
+	
 	public Recove(Socket socket,String user) throws IOException{
 		try{
 			this.socket=socket;
 			this.user=user;
+			this.username = user.substring(0, user.indexOf("("));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -76,28 +81,23 @@ class Recove implements Runnable{
 					}
 				/**私聊*/
 				}else if(message.equals("私聊")){
-					//读取一行数据
-					message=br.readLine();
-					//在服务器端显示私聊消息
-					System.out.println("收到："+message);
-					//在我的频道显示私聊信息
-					Room.jta2.append(message+"\n");
+					message = br.readLine();
+					System.out.println("收到：" + message);
+					// 解析消息格式，直接显��完整消息
+					Room.jta2.append(message + "\n\n");
 				/**显示说话消息*/
 				}else if(message.equals("聊天")){
-					message=br.readLine();
-					//在服务器端显示说话信息
-					System.out.println("收到："+message);
-					//在公共频道显示说话信息
-					Room.jta1.append(message+"\n");
-					//在我的频道显示说话信息
-					Room.jta2.append(message+"\n");
+					message = br.readLine();
+					System.out.println("收到：" + message);
+					// 直接显示完整消息
+					Room.jta1.append(message + "\n\n");
+					Room.jta2.append(message + "\n\n");
 				/**显示进入聊天室*/
 				}else if(message.equals("进入聊天室")){
-					message=br.readLine();
-					//在公共频道显示进入聊天室信息
-					Room.jta1.append(message+"\n");
-					//在我的频道显示进入聊天室信息
-					Room.jta2.append(message+"\n");
+					message = br.readLine();
+					// 直接显示完整消息
+					Room.jta1.append(message + "\n\n");
+					Room.jta2.append(message + "\n\n");
 				/**刷新*/
 				}else if(message.equals("刷新")){
 					//将好友列表清空
@@ -117,10 +117,8 @@ class Recove implements Runnable{
 				/**下线*/
 				}else if(message.equals("下线")){
 					message=br.readLine();
-					//在公共频道显示用户下线信息
-					Room.jta1.append(message+"\n");
-					//在我的频道显示用户下线信息
-					Room.jta2.append(message+"\n");
+					Room.jta1.append(message + "\n\n");
+					Room.jta2.append(message + "\n\n");
 				}
 			}
 		}catch(IOException e){
