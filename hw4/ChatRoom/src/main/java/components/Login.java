@@ -1,9 +1,13 @@
 package components;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -166,13 +170,10 @@ class Landen extends Frame implements ActionListener{
 		pan.add(jrb2);
 		pan.add(jrb3);
 		//登录按钮
-		jb1.setBounds(200, 500, 100, 35);
-		pan.add(jb1);
-		//断开按钮
-		jb2.setBounds(350, 500, 100, 35);
-		pan.add(jb2);
+		jb1.setBounds(250, 500, 100, 35);
+		pan.add(jb1);	
 		//注册按钮
-		jb3.setBounds(500, 500, 100, 35);
+		jb3.setBounds(350, 500, 100, 35);
 		pan.add(jb3);
 		//设置按钮为单选
 		gb.add(jrb1);
@@ -199,7 +200,6 @@ class Landen extends Frame implements ActionListener{
 //		jf.repaint();
 		//添加监听
 		jb1.addActionListener(this);//登录按钮
-		jb2.addActionListener(this);//断开按钮
 		jb3.addActionListener(this);//注册按钮
 		
 	}
@@ -274,11 +274,7 @@ class Landen extends Frame implements ActionListener{
 		if(event.getActionCommand().equals("注册")){
 			//用来显示/隐藏GUI组件的
 			jf.dispose();
-            new Register();
-		}
-		//如果点断开则结束程序
-		if(event.getActionCommand().equals("断开")){
-			System.exit(0);	
+			new Register();
 		}
 	}
 }
