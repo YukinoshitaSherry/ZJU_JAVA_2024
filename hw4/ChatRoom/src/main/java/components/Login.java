@@ -81,13 +81,20 @@ class Landen extends Frame implements ActionListener{
 	public void init(){
 		/**登录背景**/
 		
-		//把窗口面板设为内容面板并设为不透明，流动布局
+		//添加背景图片路径
+		String inputbg = "src/main/java/img/login.jpg";
+		//将图片添加到标签
+		ImageIcon bg = new ImageIcon(inputbg);
+		JLabel label = new JLabel(bg);
+		//设置背景图片大小
+		label.setSize(800,600);
+		jf.getLayeredPane().add(label, new Integer(Integer.MIN_VALUE));
+		
+		//把窗口面板设为内容面板并设为透明，流动布局
 		JPanel pan = (JPanel) jf.getContentPane();
-		pan.setOpaque(true);
+		pan.setOpaque(false);  // 设置为透明
 		pan.setLayout(new FlowLayout());
 		jf.setLayout(null);
-		pan.setBackground(Color.WHITE);
-		jf.setContentPane(pan);
 		
 		
 		/**用户名**/
@@ -99,7 +106,7 @@ class Landen extends Frame implements ActionListener{
 		username.setFont(f);
 		
 		//设置颜色
-		username.setForeground(Color.BLACK);
+		username.setForeground(Color.WHITE);
 		
 		/*
 		 * 这个方法定义了组件的位置。 setBounds(x, y, width, height) x 和 y 指定左上角的新位置，由 width 和 height
@@ -121,11 +128,11 @@ class Landen extends Frame implements ActionListener{
 		//设置字体
 		password.setFont(f1);
 		//设置颜色
-		password.setForeground(Color.BLACK);
+		password.setForeground(Color.WHITE);
 		//密码
-		password.setBounds(200, 200, 120, 30);
+		password.setBounds(200, 250, 120, 30);
 		//密码输入框
-		jtf2.setBounds(350, 200, 250, 30);
+		jtf2.setBounds(350, 250, 250, 30);
 		pan.add(password);
 		pan.add(jtf2);
 		
@@ -135,9 +142,9 @@ class Landen extends Frame implements ActionListener{
 		//设置字体
 		sex.setFont(f1);
 		//设置颜色
-		sex.setForeground(Color.BLACK);
+		sex.setForeground(Color.WHITE);
 		//选择性别
-		sex.setBounds(200, 300, 120, 30);
+		sex.setBounds(200, 400, 120, 30);
 		pan.add(sex);
 		Font f2 = new Font("宋体",Font.PLAIN,15);
 
@@ -145,13 +152,13 @@ class Landen extends Frame implements ActionListener{
 		jrb1.setFont(f2);
 		jrb2.setFont(f2);
 		jrb3.setFont(f2);
-		jrb1.setForeground(Color.BLACK);
-		jrb2.setForeground(Color.BLACK);
-		jrb3.setForeground(Color.BLACK);
+		jrb1.setForeground(Color.WHITE);
+		jrb2.setForeground(Color.WHITE);
+		jrb3.setForeground(Color.WHITE);
 		//选择性别按钮
-		jrb1.setBounds(350, 300, 80, 30);
-		jrb2.setBounds(450, 300, 80, 30);
-		jrb3.setBounds(550, 300, 80, 30);
+		jrb1.setBounds(350, 400, 80, 30);
+		jrb2.setBounds(450, 400, 80, 30);
+		jrb3.setBounds(550, 400, 80, 30);
 		jrb1.setOpaque(false);
 		jrb2.setOpaque(false);
 		jrb3.setOpaque(false);
@@ -159,13 +166,13 @@ class Landen extends Frame implements ActionListener{
 		pan.add(jrb2);
 		pan.add(jrb3);
 		//登录按钮
-		jb1.setBounds(250, 400, 100, 35);
+		jb1.setBounds(200, 500, 100, 35);
 		pan.add(jb1);
 		//断开按钮
-		jb2.setBounds(400, 400, 100, 35);
+		jb2.setBounds(350, 500, 100, 35);
 		pan.add(jb2);
 		//注册按钮
-		jb3.setBounds(550, 400, 100, 35);
+		jb3.setBounds(500, 500, 100, 35);
 		pan.add(jb3);
 		//设置按钮为单选
 		gb.add(jrb1);
@@ -187,7 +194,7 @@ class Landen extends Frame implements ActionListener{
 		jf.setVisible(true);
 		
 		//添加图标
-		jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
+		jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 //		jf.setLocationRelativeTo(null);
 //		jf.repaint();
 		//添加监听
@@ -260,7 +267,7 @@ class Landen extends Frame implements ActionListener{
 			jf.dispose();
             new Register();
 		}
-		//如果点击断开则结束程序
+		//如果点断开则结束程序
 		if(event.getActionCommand().equals("断开")){
 			System.exit(0);	
 		}

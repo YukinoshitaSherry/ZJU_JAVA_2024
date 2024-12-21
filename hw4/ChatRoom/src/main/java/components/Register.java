@@ -96,7 +96,7 @@ public class Register extends JFrame implements ActionListener {
     	pan2.add(btRegister);
     	jf.setLocation(800,300);//初始位置
         jf.setSize(480,400);//窗口大小
-        jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
+        jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
         jf.add(btExit);//返回登录按钮
         jf.setResizable(false);//不可编辑
         jf.setVisible(true);//桌面显示

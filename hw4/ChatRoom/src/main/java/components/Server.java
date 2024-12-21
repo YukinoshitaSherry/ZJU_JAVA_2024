@@ -1,10 +1,28 @@
 package components;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JDialog;
+import java.awt.Image;
 /**
  * 服务器
  * @author 22145
@@ -35,7 +53,7 @@ public class Server extends Frame implements ActionListener{
 	Room gm=new Room();
 	//声明变量
 	private ServerSocket server;
-	//创建打印集合
+	//创建打印集
 	public ArrayList<PrintWriter> list;
 	public static String user;
 	//定义用户集合
@@ -61,19 +79,19 @@ public class Server extends Frame implements ActionListener{
 		jf2.setLocation(800,290);//初始位置
 		//设置聊天登录框大小
 		jf2.setSize(480, 320);
-		//设置此窗体是否可由用户调整大小。
+		//设置此窗体可由用户调整大小。
 		jf2.setResizable(false);
 		//关闭聊天登录框时自动关闭程序
 		jf2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//将聊天登录框在windows桌面显示
 		jf2.setVisible(true);
 		//添加图标
-		jf2.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
+		jf2.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 		//添加监听
 		jb2.addActionListener(this);//退出服务器按钮
 		jb2.setText("关闭服务器");
 	}
-	/**显示启动服务端页面**/
+	/**显示启动服端页面**/
 	public void initdemo() {
 		/**启动背景**/
 		label.setSize(800,600);
@@ -96,7 +114,11 @@ public class Server extends Frame implements ActionListener{
 		p.add(jtf);
 		jtf.setText("8088");
 		/**启动按钮**/
-		jb.setBounds(180, 260, 120, 50);
+		jb.setBounds(180, 160, 120, 50);
+		//添加退出按钮
+		JButton exitButton = new JButton("退出");
+		exitButton.setBounds(320, 160, 120, 50);
+		p.add(exitButton);
 		p.add(jb);
 		//设置默认显示位置
 		jf.setLocation(800,300);//初始位置
@@ -109,10 +131,10 @@ public class Server extends Frame implements ActionListener{
 		//将聊天登录框在windows桌面显示
 		jf.setVisible(true);
 		//添加图标
-		jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
+		jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 		//添加监听
 		jb.addActionListener(this);//启动服务器按钮
-		
+		exitButton.addActionListener(this);
 	}
 	public static void main(String[] args){
 		new Server(user).initdemo();
@@ -198,8 +220,8 @@ public class Server extends Frame implements ActionListener{
 							//如果传进来的用户信息跟集合中的用户信息吻合
 							}else if(tg[0].equals(se.getUsername())){
 								try{
-									PrintWriter pwr=new PrintWriter(se.getSock().getOutputStream());//建立用户自己的流
-									//匹配标识
+									PrintWriter pwr=new PrintWriter(se.getSock().getOutputStream());//建立用自己的流
+									//匹标识
 									pwr.println("私聊");
 									//向单独用户发送消息
 									pwr.println(rt[1]);
@@ -237,7 +259,7 @@ public class Server extends Frame implements ActionListener{
 					//刷新
 					}else if(msg.equals("刷新")){
 						String mssge="";
-						//遍历用户集合
+						//遍历户集合
 						Iterator<User> iter=Server.list1.iterator();
 						while(iter.hasNext()){
 							User uus=iter.next();
@@ -272,34 +294,45 @@ public class Server extends Frame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==jb) {
-			//用来显示/隐藏GUI组件的
+			//创建图标并调整大小
+			ImageIcon icon = new ImageIcon("src/main/java/img/ZJU1.png");
+			Image image = icon.getImage();
+			Image newImage = image.getScaledInstance(64, 64, Image.SCALE_SMOOTH); // 调整为64x64像素
+			ImageIcon newIcon = new ImageIcon(newImage);
+
+			//设置窗口图标
+			jf.setIconImage(newIcon.getImage());
+
+			//修改提示框显示
 			jf.setVisible(false);
-			JOptionPane.showMessageDialog(this, "服务器正在启动....","服务器正在启动....",3);
+			JOptionPane.showMessageDialog(
+				null,
+				"服务器正在启动....", 
+				"服务器正在启动....",
+				JOptionPane.INFORMATION_MESSAGE,
+				newIcon  // 使用调整大小后的图标
+			);
+			
 			//初始化共享集合
-			list =new ArrayList<PrintWriter>();
+			list = new ArrayList<PrintWriter>();
 			new Server(user).startdemo();
 			try{
 				//向系统申请服务端口
-				server=new ServerSocket(PORT);
-		        	while(true){
-							//接收客户端线程
-							Socket client=server.accept();
-							PrintWriter writer = new PrintWriter(client.getOutputStream());
-					        list.add(writer); Thread t = new Thread(new Chat(client));
-					        //启动线程
-					        t.start();
-					}
+				server = new ServerSocket(PORT);
+				while(true){
+					Socket client = server.accept();
+					PrintWriter writer = new PrintWriter(client.getOutputStream());
+					list.add(writer);
+					Thread t = new Thread(new Chat(client));
+					t.start();
+				}
 			}catch(Exception e1){
 				jf2.setVisible(false);
 				JOptionPane.showMessageDialog(this, "服务器启动错误","服务器启动错误",0);
 			}
-		}else if (e.getActionCommand().equals("关闭服务器")) {
-        	jf2.setVisible(false);
-       	    JOptionPane.showMessageDialog(this, "服务器已关闭");
-       	    System.exit(0);
-		}else{
-			jf2.setVisible(false);
-			JOptionPane.showMessageDialog(this, "服务器启动错误","服务器启动错误",0);
-			}
+		} else if (e.getSource() instanceof JButton && ((JButton)e.getSource()).getText().equals("退出")) {
+			JOptionPane.showMessageDialog(null, "服务器已关闭");
+			System.exit(0);
 		}
+	}
 }

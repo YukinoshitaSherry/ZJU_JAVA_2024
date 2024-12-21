@@ -146,7 +146,7 @@ public void getMenu(String name,String sex){
 	jsp3.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	jsp3.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 	//添加图标
-	jf.setIconImage(new ImageIcon("src/main/java/img/企鹅2.png").getImage());
+	jf.setIconImage(new ImageIcon("src/main/java/img/ZJU1.png").getImage());
 	//自动调整窗口大小
 	jf.pack();
 }
