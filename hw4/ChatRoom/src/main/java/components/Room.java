@@ -44,8 +44,8 @@ public class Room extends JFrame implements ActionListener{
 	public JPanel jp6=new JPanel();//面板6
 	public JPanel jp7=new JPanel();//面板7
 	//设置文本框
-	public static JTextArea jta1=new JTextArea(12,42);//主文本框
-	public static JTextArea jta2=new JTextArea(12,42);//我的频道
+	public static JTextArea jta1=new JTextArea(18,60);//主文本框
+	public static JTextArea jta2=new JTextArea(18,60);//我的频道
 	//添加相应文本汉字
 	public JLabel jl1=new JLabel("对");
 	//设置下拉菜单
@@ -79,8 +79,12 @@ public void getMenu(String name, String sex) {
 	jta1.setEditable(false);
 	jta2.setEditable(false);
 	
+	// 确保发送消息的文本框可编辑
+	jtf.setEditable(true);
+	jtf.setEnabled(true);
+	
 	// 设置窗口基本属性
-	jf.setSize(1200, 800);
+	jf.setSize(1400, 800);
 	jf.setLocationRelativeTo(null);  // 居中显示
 	jf.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	jf.setResizable(false);
@@ -99,7 +103,7 @@ public void getMenu(String name, String sex) {
 	
 	// 发送消息面板
 	JPanel jpSend = new JPanel();
-	jpSend.setLayout(new GridLayout(4, 1, 5, 5));
+	jpSend.setLayout(new GridLayout(3, 1, 5, 5));
 	jpSend.setBorder(new TitledBorder("发送消息"));
 	
 	// 选择发送对象
@@ -107,11 +111,12 @@ public void getMenu(String name, String sex) {
 	jpSelect.add(jl1);
 	jpSelect.add(jcomb);
 	
-	// 文本框和按钮
-	JPanel jpText = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	jtf.setPreferredSize(new Dimension(200, 25));
-	jpText.add(jtf);
+	// 文本框面板
+	JPanel jpText = new JPanel(new BorderLayout());
+	jtf.setPreferredSize(new Dimension(180, 800));
+	jpText.add(jtf, BorderLayout.CENTER);
 	
+	// 按钮面板
 	JPanel jpButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	jpButtons.add(jb1);
 	jpButtons.add(jb2);
@@ -145,7 +150,7 @@ public void getMenu(String name, String sex) {
 	// 设置各面板大小
 	jpLeft.setPreferredSize(new Dimension(250, 750));
 	jp5.setPreferredSize(new Dimension(700, 750));
-	jp6.setPreferredSize(new Dimension(200, 750));
+	jp6.setPreferredSize(new Dimension(300, 750));
 	
 	// 设置主面板布局
 	jp7.setLayout(new BorderLayout(10, 0));
@@ -155,7 +160,7 @@ public void getMenu(String name, String sex) {
 	
 	// 添加到主窗口并显示
 	jf.add(jp7);
-	jf.setVisible(true);  // 设置窗口可见
+	jf.setVisible(true);  // 置窗口可见
 	
 	// 添加按钮监听器
 	jb1.addActionListener(this);
