@@ -76,6 +76,8 @@ public class Room extends JFrame implements ActionListener{
 	public JLabel lblUsername = new JLabel();
 	public JLabel lblGender = new JLabel();
 	public JLabel lblNoFriends = new JLabel("目前暂时无好友在线", SwingConstants.CENTER);
+	// 在类成员变量中添加
+	public JButton exitButton = new JButton("退出");
 /**显示聊天界面*/
 public void getMenu(String name, String sex) {
 	//添加全部聊天
@@ -126,17 +128,24 @@ public void getMenu(String name, String sex) {
 	textScrollPane.setPreferredSize(new Dimension(200, 100));
 	jpText.add(textScrollPane, BorderLayout.CENTER);
 	
-	// 按钮面板
-	JPanel jpButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	jpButtons.add(jb1);
-	jpButtons.add(jb2);
-	
+	// 在发送消息面板中添加按钮面板
+	JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+	jb1.setPreferredSize(new Dimension(100, 30));  // 发送按钮
+	jb2.setPreferredSize(new Dimension(80, 30));   // 刷新按钮
+	exitButton.setPreferredSize(new Dimension(80, 30));  // 退出按钮
+
+	buttonPanel.add(jb1);
+	buttonPanel.add(Box.createHorizontalStrut(5));
+	buttonPanel.add(jb2);
+	buttonPanel.add(Box.createHorizontalStrut(5));
+	buttonPanel.add(exitButton);
+
 	// 组装面板，减小垂直间距
 	jpSend.add(jpSelect);
 	jpSend.add(Box.createVerticalStrut(2));  // 减小间距
 	jpSend.add(jpText);
-	jpSend.add(Box.createVerticalStrut(2));  // 减小间距
-	jpSend.add(jpButtons);
+	jpSend.add(Box.createVerticalStrut(5));
+	jpSend.add(buttonPanel);  // 添加按钮面板
 	
 	// 组装左侧面板
 	jpLeft.add(jpUserInfo, BorderLayout.NORTH);
@@ -166,12 +175,12 @@ public void getMenu(String name, String sex) {
 	jp6.add(jsp3, BorderLayout.CENTER);
 	
 	// 设置各面板大小
-	jpLeft.setPreferredSize(new Dimension(250, 750));
+	jpLeft.setPreferredSize(new Dimension(280, 750));
 	jp5.setPreferredSize(new Dimension(900, 750));
-	jp6.setPreferredSize(new Dimension(300, 750));
+	jp6.setPreferredSize(new Dimension(270, 750));
 	
 	// 设置主面板布局，移除面板间距
-	jp7.setLayout(new BorderLayout(0, 0));  // 将间距设为0
+	jp7.setLayout(new BorderLayout(0, 0));  // 将间距���为0
 	jp7.add(jpLeft, BorderLayout.WEST);
 	jp7.add(jp5, BorderLayout.CENTER);
 	jp7.add(jp6, BorderLayout.EAST);
@@ -189,6 +198,7 @@ public void getMenu(String name, String sex) {
 	jsp3.setBorder(BorderFactory.createTitledBorder(
 	    BorderFactory.createLineBorder(Color.LIGHT_GRAY), "在线好友列表"));
 
+	
 	// 添加到主窗口并显示
 	jf.add(jp7);
 	jf.setVisible(true);  // 置窗口可
@@ -196,6 +206,8 @@ public void getMenu(String name, String sex) {
 	// 添加按钮监听器
 	jb1.addActionListener(this);
 	jb2.addActionListener(this);
+	// 添加退出按钮监听器
+	exitButton.addActionListener(this);
 }
 /**启动聊天室口*/
 public void sock(){
@@ -276,6 +288,16 @@ public void actionPerformed(ActionEvent event){
 			//将内存中数据一次性输出
 			pw.flush();
 			}
+		// 处理退出按钮
+		if (event.getSource() == exitButton) {
+			// 发送下线消息
+			pw.println("下线");
+			pw.println(na + ":离开聊天室");
+			pw.flush();
+			// 关闭窗口
+			jf.dispose();
+			return;
+		}
 	}catch(Exception ex){
 		ex.printStackTrace();
 	}

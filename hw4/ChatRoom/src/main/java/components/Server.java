@@ -64,10 +64,26 @@ public class Server extends Frame implements ActionListener{
 	}
 	/**服务器启动监听**/
 	public void startdemo() {
-		/**监听背景**/
-		label2.setSize(480,300);
-		jf2.getLayeredPane().add(label2,new Integer(Integer.MIN_VALUE));
-		//透明流动窗口
+		// 修改背景图片
+		String inputbg = "src/main/java/img/ZJU2.jpg";
+		ImageIcon bg = new ImageIcon(inputbg);
+		label2 = new JLabel(bg);  // 确保label2已经初始化
+		
+		// 设置背景标签大小与窗口一致
+		label2.setBounds(0, 0, 800, 600);
+		
+		// 将背景添加到最底层
+		jf2.getLayeredPane().add(label2, new Integer(Integer.MIN_VALUE));
+		
+		// 获取内容面板并设置为透明
+		JPanel contentPane = (JPanel) jf2.getContentPane();
+		contentPane.setOpaque(false);
+		contentPane.setLayout(new FlowLayout());
+		
+		// 设置窗口布局为null以支持绝对定位
+		jf2.setLayout(null);
+		
+		//不透明流动窗口
 		JPanel p2 = (JPanel) jf2.getContentPane();
 		p2.setOpaque(false);
 		p2.setLayout(new FlowLayout());
@@ -93,14 +109,19 @@ public class Server extends Frame implements ActionListener{
 	}
 	/**显示启动服端页面**/
 	public void initdemo() {
-		/**启动背景**/
+		// 启动背景
+		String inputbg = "src/main/java/img/register.jpg";
+		ImageIcon bg = new ImageIcon(inputbg);
+		label.setIcon(bg);
 		label.setSize(800,600);
 		jf.getLayeredPane().add(label,new Integer(Integer.MIN_VALUE));
-		//把窗口面板设为内容面板并设为透明，流动布局
+		
+		// 其他代码保持不变
 		JPanel p = (JPanel) jf.getContentPane();
 		p.setOpaque(false);
 		p.setLayout(new FlowLayout());
 		jf.setLayout(null);
+		
 		/**端口**/
 		JLabel start = new JLabel("端口号：");
 		Font f=new Font("宋体",Font.PLAIN,20);

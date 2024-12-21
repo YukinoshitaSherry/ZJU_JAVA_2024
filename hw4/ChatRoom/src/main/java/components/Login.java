@@ -173,7 +173,7 @@ class Landen extends Frame implements ActionListener{
 		jb1.setBounds(250, 500, 100, 35);
 		pan.add(jb1);	
 		//注册按钮
-		jb3.setBounds(350, 500, 100, 35);
+		jb3.setBounds(400, 500, 100, 35);
 		pan.add(jb3);
 		//设置按钮为单选
 		gb.add(jrb1);
