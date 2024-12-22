@@ -105,14 +105,9 @@ public class Main {
     private static void handleWebCrawling(Scanner scanner) {
         System.out.println("请输入要索引的网页URL（例如: https://www.baidu.com）：");
         String url = scanner.nextLine();
-        System.out.println("请输入爬取深度（1-3，数字越大爬取范围越广）：");
-        int depth = scanner.nextInt();
-        scanner.nextLine();
 
-        System.out.println("\n开始爬取网页，请稍候...");
-        WebCrawler crawler = new WebCrawler(indexer, depth);
-        crawler.crawl(url, 0);
-        crawler.waitForCompletion();
+        System.out.println("\n已记录网页URL，搜索时将自动爬取相关内容...");
+        WebCrawler.addUrlToIndex(url);
         hasWebContent = true;
     }
 
@@ -158,12 +153,15 @@ public class Main {
         }
 
         System.out.println("\n找到 " + results.size() + " 个结果:");
+        int count = 1;
         for (SearchResult result : results) {
-            System.out.println("\n文件路径: " + result.getFilePath());
+            System.out.println("\n结果 #" + count + ":");
+            System.out.println("文件路径: " + result.getFilePath());
             System.out.println("文件类型: " + (result.getMimeType() != null ? result.getMimeType() : "未知类型"));
             System.out.println("相关度: " + result.getScore());
             System.out.println("内容预览: " + result.getPreview());
             System.out.println("----------------------------------------");
+            count++;
         }
     }
 
@@ -173,7 +171,7 @@ public class Main {
             throw new IOException("无效的目录路径: " + path);
         }
 
-        System.out.println("开始索引现���文件...");
+        System.out.println("开始索引现文件...");
         indexFilesInDirectory(folder, parser, indexer);
         indexer.commit();
         System.out.println("索引完成！");

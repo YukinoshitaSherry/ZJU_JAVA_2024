@@ -12,29 +12,56 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class WebCrawler {
-    private final Set<String> visitedUrls = new HashSet<>();
     private final Indexer indexer;
     private final int maxDepth;
     private int crawledCount = 0;
-    private static final int MAX_PAGES = 10; // 限制爬取页面数量
+    private static final int MAX_PAGES = 10;
+    private static Set<String> urlsToIndex = new HashSet<>();
+    private final Set<String> visitedUrls = new HashSet<>();
 
     public WebCrawler(Indexer indexer, int maxDepth) {
         this.indexer = indexer;
         this.maxDepth = maxDepth;
     }
 
-    public void crawl(String url, int depth) {
-        if (depth > maxDepth || visitedUrls.contains(url) || crawledCount >= MAX_PAGES) {
+    public static void addUrlToIndex(String url) { urlsToIndex.add(url); }
+
+    public void crawl(String keyword) {
+        try {
+            for (String baseUrl : urlsToIndex) {
+                // 构建搜索URL
+                String searchUrl = baseUrl + "/s?wd=" + java.net.URLEncoder.encode(keyword, "UTF-8");
+                Document searchDoc = Jsoup.connect(searchUrl).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)").timeout(10000).get();
+
+                // 提取搜索结果链接
+                Elements searchResults = searchDoc.select("div.result h3.t a");
+
+                for (int i = 0; i < Math.min(searchResults.size(), MAX_PAGES); i++) {
+                    String resultUrl = searchResults.get(i).attr("href");
+                    crawlPage(resultUrl);
+                    if (crawledCount >= MAX_PAGES) break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("搜索失败: " + e.getMessage());
+        }
+    }
+
+    public void waitForCompletion() {
+        // 同步执行，无需等待
+    }
+
+    private void crawlPage(String url) {
+        if (visitedUrls.contains(url) || crawledCount >= MAX_PAGES) {
             return;
         }
 
         try {
-            visitedUrls.add(url);
             Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)").timeout(10000).get();
 
-            // 提取网页内容
-            StringBuilder content = new StringBuilder();
+            visitedUrls.add(url);
             String title = doc.title();
+            StringBuilder content = new StringBuilder();
 
             // 提取主要内容
             Elements mainContent = doc.select("p, h1, h2, h3, article, .content, .main");
@@ -60,17 +87,8 @@ public class WebCrawler {
             System.out.println("标题: " + title);
             System.out.println("--------------------");
 
-            // 只在第一层爬取链接
-            if (depth == 0) {
-                doc.select("a[href]").stream().map(link -> link.attr("abs:href")).filter(nextUrl -> !nextUrl.isEmpty() && nextUrl.startsWith("http") && !nextUrl.contains("#") && !visitedUrls.contains(nextUrl)).limit(MAX_PAGES - crawledCount).forEach(nextUrl -> crawl(nextUrl, depth + 1));
-            }
         } catch (IOException e) {
             System.err.println("爬取页面失败: " + url + "\n原因: " + e.getMessage());
         }
-    }
-
-    public void waitForCompletion() {
-        System.out.println("\n爬取完成！共索引了 " + crawledCount + " 个网页");
-        System.out.println("现在可以搜索网页内容了！");
     }
 }
