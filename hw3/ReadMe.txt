@@ -1,6 +1,6 @@
 # 在项目根目录(SearchEngine)下执行
 # 清理并编译项目
-mvn clean compile
+mvn clean install
 
 # 打包项目（这将创建包含所有依赖的 JAR 文件）
 mvn package

@@ -13,14 +13,17 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+
 public class Indexer {
     private final IndexWriter writer;
-    private static final String INDEX_DIR = "lucene_index";
+    private static final String INDEX_DIR = "SearchEngine_index";
 
     public Indexer() throws IOException {
         Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
         StandardAnalyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+        config.setRAMBufferSizeMB(256.0);
         writer = new IndexWriter(dir, config);
     }
 

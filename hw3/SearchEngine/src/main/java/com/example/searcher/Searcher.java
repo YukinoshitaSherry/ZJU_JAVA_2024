@@ -18,6 +18,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+
 public class Searcher {
     private final IndexSearcher searcher;
     private final QueryParser parser;
@@ -31,8 +32,8 @@ public class Searcher {
     }
 
     public List<SearchResult> search(String queryString) throws Exception {
-        Query query = parser.parse(queryString);
-        TopDocs hits = searcher.search(query, 20);
+        Query query = parser.parse(queryString.toLowerCase());
+        TopDocs hits = searcher.search(query, 100);
 
         List<SearchResult> results = new ArrayList<>();
         Set<String> addedPaths = new HashSet<>();
@@ -45,7 +46,9 @@ public class Searcher {
                 addedPaths.add(path);
                 String content = doc.get("content");
                 if (content != null && !content.trim().isEmpty()) {
-                    results.add(new SearchResult(path, content, doc.get("mimeType"), scoreDoc.score));
+                    if (scoreDoc.score > 0.1f) {
+                        results.add(new SearchResult(path, content, doc.get("mimeType"), scoreDoc.score));
+                    }
                 }
             }
         }

@@ -1,10 +1,5 @@
 package com.example;
 
-import com.example.crawler.WebCrawler;
-import com.example.indexer.Indexer;
-import com.example.parser.Parser;
-import com.example.searcher.Searcher;
-import com.example.searcher.Searcher.SearchResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -18,7 +13,15 @@ import java.nio.file.WatchService;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
 import org.apache.tika.exception.TikaException;
+
+import com.example.crawler.WebCrawler;
+import com.example.indexer.Indexer;
+import com.example.parser.Parser;
+import com.example.searcher.Searcher;
+import com.example.searcher.Searcher.SearchResult;
+
 
 public class Main {
     private static Parser parser;
@@ -32,7 +35,24 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             parser = new Parser();
             indexer = new Indexer();
-            searcher = new Searcher();
+
+            // 确保索引目录存在
+            File indexDir = new File("SearchEngine_index");
+            if (!indexDir.exists()) {
+                indexDir.mkdirs();
+                // 创建一个空的文档以初始化索引
+                indexer.createIndex("初始化文档", "init.txt", "text/plain");
+                indexer.commit();
+            }
+
+            try {
+                searcher = new Searcher();
+            } catch (IOException e) {
+                // 如果打开索引失败，重新创建一个新的索引
+                indexer.createIndex("初始化文档", "init.txt", "text/plain");
+                indexer.commit();
+                searcher = new Searcher();
+            }
 
             System.out.println("欢迎使用文件搜索引擎！");
             System.out.println("本程序支持本地文件和网页内容的索引与搜索。");
@@ -103,12 +123,22 @@ public class Main {
     }
 
     private static void handleWebCrawling(Scanner scanner) {
-        System.out.println("请输入要索引的网页URL（例如: https://www.baidu.com）：");
-        String url = scanner.nextLine();
+        try {
+            System.out.println("请输入要索引的网页URL（例如: https://www.runoob.com/java/java-tutorial.html）：");
+            String url = scanner.nextLine();
 
-        System.out.println("\n已记录网页URL，搜索时将自动爬取相关内容...");
-        WebCrawler.addUrlToIndex(url);
-        hasWebContent = true;
+            System.out.println("\n开始爬取网页内容...");
+            WebCrawler crawler = new WebCrawler(indexer, 2);
+            WebCrawler.addUrlToIndex(url);
+            crawler.crawl(url); // 立即执行爬取
+            crawler.waitForCompletion();
+
+            System.out.println("网页内容爬取完成！");
+            hasWebContent = true;
+        } catch (Exception e) {
+            System.out.println("爬取失败: " + e.getMessage());
+            hasWebContent = false;
+        }
     }
 
     private static void handleSearch(Scanner scanner) {
@@ -130,11 +160,11 @@ public class Main {
                 break;
             case 2:
                 // 仅本地文件
-                query += " AND NOT path:webpage*";
+                query = "content:" + query + " AND NOT path:webpage*";
                 break;
             case 3:
                 // 仅网页内容
-                query += " AND path:webpage*";
+                query = "content:" + query + " AND path:webpage*";
                 break;
             default:
                 System.out.println("无效的选项，使用默认搜索范围（所有内容）");
