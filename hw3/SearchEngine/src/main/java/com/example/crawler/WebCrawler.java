@@ -10,7 +10,6 @@ import org.jsoup.select.Elements;
 
 import com.example.indexer.Indexer;
 
-
 public class WebCrawler {
     private final Indexer indexer;
     private final int maxDepth;
@@ -80,7 +79,8 @@ public class WebCrawler {
             content.append("网页内容: ").append(doc.body().text());
 
             // 存储完整内容
-            indexer.createIndex(content.toString(), "webpage:" + url, "webpage");
+            String contentStr = content.toString();
+            indexer.createIndex(contentStr, "webpage:" + url, "webpage");
             indexer.commit();
 
             crawledCount++;

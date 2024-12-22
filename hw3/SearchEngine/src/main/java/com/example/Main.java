@@ -10,6 +10,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -21,7 +22,6 @@ import com.example.indexer.Indexer;
 import com.example.parser.Parser;
 import com.example.searcher.Searcher;
 import com.example.searcher.Searcher.SearchResult;
-
 
 public class Main {
     private static Parser parser;
@@ -154,25 +154,33 @@ public class Main {
             int scope = scanner.nextInt();
             scanner.nextLine();
 
-            switch (scope) {
-            case 1:
-                // 所有内容，不需要修改查询
-                break;
-            case 2:
-                // 仅本地文件
-                query = "content:" + query + " AND NOT path:webpage*";
-                break;
-            case 3:
-                // 仅网页内容
-                query = "content:" + query + " AND path:webpage*";
-                break;
-            default:
-                System.out.println("无效的选项，使用默认搜索范围（所有内容）");
+            String finalQuery = "content:" + query;
+            List<SearchResult> results = searcher.search(finalQuery);
+            List<SearchResult> filteredResults = new ArrayList<>();
+
+            for (SearchResult result : results) {
+                String path = result.getFilePath();
+                switch (scope) {
+                case 1: // 所有内容
+                    filteredResults.add(result);
+                    break;
+                case 2: // 仅本地文件
+                    if (!path.startsWith("webpage:")) {
+                        filteredResults.add(result);
+                    }
+                    break;
+                case 3: // 仅网页内容
+                    if (path.startsWith("webpage:")) {
+                        filteredResults.add(result);
+                    }
+                    break;
+                }
             }
 
-            displaySearchResults(searcher.search(query));
+            displaySearchResults(filteredResults);
         } catch (Exception e) {
             System.err.println("搜索出错: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
