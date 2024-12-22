@@ -27,23 +27,40 @@ public class WebCrawler {
     public static void addUrlToIndex(String url) { urlsToIndex.add(url); }
 
     public void crawl(String keyword) {
+        boolean hasSuccessfulCrawl = false;
         try {
-            for (String baseUrl : urlsToIndex) {
-                // 构建搜索URL
-                String searchUrl = baseUrl + "/s?wd=" + java.net.URLEncoder.encode(keyword, "UTF-8");
-                Document searchDoc = Jsoup.connect(searchUrl).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)").timeout(10000).get();
+            for (String url : urlsToIndex) {
+                // 直接爬取给定的URL
+                if (crawlPage(url)) {
+                    hasSuccessfulCrawl = true;
+                }
 
-                // 提取搜索结果链接
-                Elements searchResults = searchDoc.select("div.result h3.t a");
+                // 获取相关链接
+                Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)").timeout(10000).get();
 
-                for (int i = 0; i < Math.min(searchResults.size(), MAX_PAGES); i++) {
-                    String resultUrl = searchResults.get(i).attr("href");
-                    crawlPage(resultUrl);
-                    if (crawledCount >= MAX_PAGES) break;
+                // 提取所有链接
+                Elements links = doc.select("a[href]");
+
+                for (int i = 0; i < Math.min(links.size(), MAX_PAGES - 1); i++) {
+                    String nextUrl = links.get(i).attr("abs:href");
+                    if (!nextUrl.isEmpty() && nextUrl.contains(keyword.toLowerCase())) {
+                        if (crawlPage(nextUrl)) {
+                            hasSuccessfulCrawl = true;
+                        }
+                        if (crawledCount >= MAX_PAGES) break;
+                    }
                 }
             }
+
+            if (hasSuccessfulCrawl) {
+                System.out.println("\n爬取完成！如果搜索结果未找到匹配内容，可能是因为：");
+                System.out.println("1. 关键词不在已爬取的页面内容中");
+                System.out.println("2. 需要调整搜索关键词");
+                System.out.println("3. 尝试爬取其他相关网页\n");
+            }
+
         } catch (IOException e) {
-            System.err.println("搜索失败: " + e.getMessage());
+            System.err.println("爬取失败: " + e.getMessage());
         }
     }
 
@@ -51,9 +68,9 @@ public class WebCrawler {
         // 同步执行，无需等待
     }
 
-    private void crawlPage(String url) {
+    private boolean crawlPage(String url) {
         if (visitedUrls.contains(url) || crawledCount >= MAX_PAGES) {
-            return;
+            return false;
         }
 
         try {
@@ -63,21 +80,9 @@ public class WebCrawler {
             String title = doc.title();
             StringBuilder content = new StringBuilder();
 
-            // 提取主要内容
-            Elements mainContent = doc.select("p, h1, h2, h3, article, .content, .main");
-            mainContent.forEach(element -> {
-                String text = element.text().trim();
-                if (!text.isEmpty()) {
-                    content.append(text).append("\n");
-                }
-            });
+            Elements mainContent = doc.select("body");
+            content.append(mainContent.text());
 
-            // 如果内容太少，获取更多内容
-            if (content.length() < 100) {
-                content.append(doc.body().text());
-            }
-
-            // 索引页面内容
             indexer.createIndex("标题: " + title + "\n内容: " + content.toString(), "webpage:" + url, "webpage");
             indexer.commit();
 
@@ -87,8 +92,11 @@ public class WebCrawler {
             System.out.println("标题: " + title);
             System.out.println("--------------------");
 
+            return true;
+
         } catch (IOException e) {
             System.err.println("爬取页面失败: " + url + "\n原因: " + e.getMessage());
+            return false;
         }
     }
 }

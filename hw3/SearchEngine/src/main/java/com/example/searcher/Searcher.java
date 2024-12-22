@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -20,7 +21,7 @@ import org.apache.lucene.store.FSDirectory;
 public class Searcher {
     private final IndexSearcher searcher;
     private final QueryParser parser;
-    private static final String INDEX_DIR = "lucene_index";
+    private static final String INDEX_DIR = "SearchEngine_index";
 
     public Searcher() throws IOException {
         Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
