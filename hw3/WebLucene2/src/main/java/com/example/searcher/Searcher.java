@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -17,7 +16,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
 
 public class Searcher {
     private final IndexSearcher searcher;
@@ -33,19 +31,21 @@ public class Searcher {
 
     public List<SearchResult> search(String queryString) throws Exception {
         Query query = parser.parse(queryString);
-        TopDocs hits = searcher.search(query, 10);
+        TopDocs hits = searcher.search(query, 20);
 
         List<SearchResult> results = new ArrayList<>();
-        Set<String> addedPaths = new HashSet<>(); // 用于跟踪已添加的文件路径
+        Set<String> addedPaths = new HashSet<>();
 
         for (ScoreDoc scoreDoc : hits.scoreDocs) {
             Document doc = searcher.doc(scoreDoc.doc);
             String path = doc.get("path");
 
-            // 检查文件路径是否已经添加过
             if (!addedPaths.contains(path)) {
                 addedPaths.add(path);
-                results.add(new SearchResult(path, doc.get("content"), doc.get("mimeType"), scoreDoc.score));
+                String content = doc.get("content");
+                if (content != null && !content.trim().isEmpty()) {
+                    results.add(new SearchResult(path, content, doc.get("mimeType"), scoreDoc.score));
+                }
             }
         }
         return results;
@@ -70,32 +70,33 @@ public class Searcher {
         public float getScore() { return score; }
 
         public String getPreview() {
-            if (content == null || content.isEmpty()) {
-                return "无预览内容";
-            }
-
-            String cleanContent = content.replaceAll("<[^>]*>", "").replaceAll("\\s+", " ").trim();
-
-            // 区分网页和本地文件的显示
             if (filePath.startsWith("webpage:")) {
-                String url = filePath.substring(7); // 移除"webpage:"前缀
-                String[] lines = cleanContent.split("\n");
+                String url = filePath.substring(7);
+                String[] lines = content.split("\n");
                 StringBuilder preview = new StringBuilder();
-                preview.append("网页URL: ").append(url).append("\n");
 
-                // 提取并显示有意义的内容
+                String title = "";
+                String mainContent = "";
+
                 for (String line : lines) {
-                    if (line.length() > 10 && !line.startsWith("URL:")) { // 跳过太短的行和URL行
-                        preview.append(line.substring(0, Math.min(line.length(), 100)));
-                        preview.append("...\n");
+                    if (line.startsWith("标题:")) {
+                        title = line.substring(3).trim();
+                    } else if (line.startsWith("内容:")) {
+                        mainContent = line.substring(3).trim();
                         break;
                     }
                 }
+
+                preview.append("网页标题: ").append(title).append("\n");
+                preview.append("网页地址: ").append(url).append("\n");
+                if (!mainContent.isEmpty()) {
+                    preview.append("相关内容: ").append(mainContent.substring(0, Math.min(mainContent.length(), 150))).append("...");
+                }
+
                 return preview.toString();
             } else {
                 // 本地文件的显示逻辑保持不变
-                int previewLength = Math.min(cleanContent.length(), 200);
-                return cleanContent.substring(0, previewLength) + (cleanContent.length() > 200 ? "..." : "");
+                return content.substring(0, Math.min(content.length(), 200)) + (content.length() > 200 ? "..." : "");
             }
         }
     }
