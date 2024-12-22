@@ -1,5 +1,10 @@
 package com.example;
 
+import com.example.crawler.WebCrawler;
+import com.example.indexer.Indexer;
+import com.example.parser.Parser;
+import com.example.searcher.Searcher;
+import com.example.searcher.Searcher.SearchResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -14,14 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
 import org.apache.tika.exception.TikaException;
-
-import com.example.crawler.WebCrawler;
-import com.example.indexer.Indexer;
-import com.example.parser.Parser;
-import com.example.searcher.Searcher;
-import com.example.searcher.Searcher.SearchResult;
 
 public class Main {
     private static Parser parser;
