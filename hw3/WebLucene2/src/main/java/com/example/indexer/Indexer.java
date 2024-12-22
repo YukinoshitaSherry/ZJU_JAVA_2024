@@ -13,7 +13,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-
 public class Indexer {
     private final IndexWriter writer;
     private static final String INDEX_DIR = "lucene_index";
@@ -25,11 +24,14 @@ public class Indexer {
         writer = new IndexWriter(dir, config);
     }
 
-    public void createIndex(String content, String filePath) throws IOException {
+    public void createIndex(String content, String filePath, String mimeType) throws IOException {
         Document doc = new Document();
 
         // 存储文件路径
         doc.add(new StringField("path", filePath, Field.Store.YES));
+
+        // 存储文件类型
+        doc.add(new StringField("mimeType", mimeType, Field.Store.YES));
 
         // 存储文件内容
         doc.add(new TextField("content", content, Field.Store.YES));

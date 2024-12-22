@@ -16,6 +16,7 @@ import java.util.Scanner;
 
 import org.apache.tika.exception.TikaException;
 
+import com.example.crawler.WebCrawler;
 import com.example.indexer.Indexer;
 import com.example.parser.Parser;
 import com.example.searcher.Searcher;
@@ -49,22 +50,51 @@ public class Main {
                 System.out.println("\n请选择操作：");
                 System.out.println("1. 搜索文件");
                 System.out.println("2. 更改监控目录");
-                System.out.println("3. 退出");
+                System.out.println("3. 添加网页索引");
+                System.out.println("4. 退出");
 
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // 消费换行符
+                try {
+                    int choice = scanner.nextInt();
+                    scanner.nextLine(); // 消费换行符
 
-                switch (choice) {
-                case 1:
-                    performSearch(searcher, scanner);
-                    break;
-                case 2:
-                    System.out.println("请输入新的监控目录：");
-                    watchPath = scanner.nextLine();
-                    indexExistingFiles(watchPath, parser, indexer);
-                    break;
-                case 3:
-                    return;
+                    if (choice < 1 || choice > 4) {
+                        System.out.println("无效的选项，请输入1-4之间的数字");
+                        continue;
+                    }
+
+                    switch (choice) {
+                    case 1:
+                        performSearch(searcher, scanner);
+                        break;
+                    case 2:
+                        System.out.println("请输入新的监控目录：");
+                        watchPath = scanner.nextLine();
+                        indexExistingFiles(watchPath, parser, indexer);
+                        break;
+                    case 3:
+                        System.out.println("请输入要索引的网页URL（例如: https://www.baidu.com）：");
+                        String url = scanner.nextLine();
+                        System.out.println("请输入爬取深度（1-3，数字越大爬取范围越广）：");
+                        int depth = scanner.nextInt();
+                        scanner.nextLine(); // 消费换行符
+
+                        System.out.println("\n开始爬取网页，请稍候...");
+                        System.out.println("提示：爬取过程中会显示进度，完成后即可搜索网页内容");
+
+                        WebCrawler crawler = new WebCrawler(indexer, depth);
+                        crawler.crawl(url, 0);
+                        crawler.waitForCompletion();
+                        break;
+                    case 4:
+                        System.out.println("感谢使用搜索引擎，再见！");
+                        indexer.close(); // 关闭索引器
+                        System.exit(0);  // 确保程序完全退出
+                        return;
+                    }
+                } catch (Exception e) {
+                    System.out.println("输入错误，请输入有效的数字选项(1-4)");
+                    scanner.nextLine(); // 清除错误输入
+                    continue;
                 }
             }
 
@@ -95,7 +125,7 @@ public class Main {
                     try {
                         Map<String, String> fileContent = parser.parseFile(file.getPath());
                         if (fileContent.get("content") != null) {
-                            indexer.createIndex(fileContent.get("content"), file.getPath());
+                            indexer.createIndex(fileContent.get("content"), file.getPath(), fileContent.get("mimeType"));
                             System.out.println("已索引: " + file.getPath());
                         }
                     } catch (TikaException e) {
@@ -122,7 +152,7 @@ public class Main {
                         if (Files.isRegularFile(filePath)) {
                             try {
                                 Map<String, String> fileContent = parser.parseFile(filePath.toString());
-                                indexer.createIndex(fileContent.get("content"), filePath.toString());
+                                indexer.createIndex(fileContent.get("content"), filePath.toString(), fileContent.get("mimeType"));
                                 indexer.commit();
                                 System.out.println("新文件已索引: " + filePath);
                             } catch (Exception e) {
@@ -140,10 +170,59 @@ public class Main {
 
     private static void performSearch(Searcher searcher, Scanner scanner) {
         try {
-            System.out.println("请输入搜索关键词：");
-            String keyword = scanner.nextLine();
+            System.out.println("\n请选择搜索选项：");
+            System.out.println("1. 按关键词搜索");
+            System.out.println("2. 按文件类型搜索 (如: pdf, doc, html)");
+            System.out.println("3. 按文件路径搜索");
+            System.out.println("4. 组合搜索");
 
-            List<SearchResult> results = searcher.search(keyword);
+            int option = scanner.nextInt();
+            scanner.nextLine(); // 消费换行符
+
+            String query = "";
+            switch (option) {
+            case 1:
+                System.out.println("请输入搜索关键词：");
+                query = scanner.nextLine();
+                System.out.println("搜索范围：");
+                System.out.println("1. 所有内容");
+                System.out.println("2. 仅本地文件");
+                System.out.println("3. 仅网页内容");
+                int scope = scanner.nextInt();
+                scanner.nextLine(); // 消费换行符
+
+                switch (scope) {
+                case 2:
+                    query = query + " AND NOT path:webpage*";
+                    break;
+                case 3:
+                    query = query + " AND path:webpage*";
+                    break;
+                }
+                break;
+            case 2:
+                System.out.println("请输入文件类型（如：html）：");
+                String fileType = scanner.nextLine().toLowerCase();
+                query = "mimeType:" + fileType;
+                break;
+            case 3:
+                System.out.println("请输入文件路径包含的内容：");
+                String pathQuery = scanner.nextLine();
+                query = "path:" + pathQuery;
+                break;
+            case 4:
+                System.out.println("请输入关键词：");
+                String keyword = scanner.nextLine();
+                System.out.println("请输入文件类型（可选，直接回车跳过）：");
+                String type = scanner.nextLine();
+                query = keyword;
+                if (!type.trim().isEmpty()) {
+                    query += " AND mimeType:" + type;
+                }
+                break;
+            }
+
+            List<SearchResult> results = searcher.search(query);
             if (results.isEmpty()) {
                 System.out.println("未找到匹配结果");
                 return;
@@ -152,7 +231,9 @@ public class Main {
             System.out.println("\n找到 " + results.size() + " 个结果:");
             for (SearchResult result : results) {
                 System.out.println("\n文件路径: " + result.getFilePath());
-                System.out.println("相关度得分: " + result.getScore());
+                System.out.println("文件类型: " + (result.getMimeType() != null ? result.getMimeType() : "未知类型"));
+                System.out.println("相关度得: " + result.getScore());
+                System.out.println("内容预览: " + result.getPreview());
                 System.out.println("----------------------------------------");
             }
         } catch (Exception e) {
