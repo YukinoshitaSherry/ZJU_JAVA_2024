@@ -142,11 +142,37 @@ public class Register extends JFrame implements ActionListener {
 
     private void registerUser(String username, String password) {
         try {
-            // 数据库操作代码...
-            // 这里保持原有的数据库注册逻辑不变
+            dbConnection = DBUtils.getConn();
+            // 检查用户名是否已存在
+            String checkQuery = "SELECT * FROM user WHERE username = ?";
+            dbStatement = dbConnection.prepareStatement(checkQuery);
+            dbStatement.setString(1, username);
+            dbResult = dbStatement.executeQuery();
+
+            if (dbResult.next()) {
+                JOptionPane.showMessageDialog(null, "用户名已存在！");
+                return;
+            }
+
+            // 插入新用户
+            String insertQuery = "INSERT INTO user (username, password) VALUES (?, ?)";
+            dbStatement = dbConnection.prepareStatement(insertQuery);
+            dbStatement.setString(1, username);
+            dbStatement.setString(2, password);
+
+            int result = dbStatement.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(null, "注册成功！");
+                registerFrame.dispose();
+                new Landen().init();
+            } else {
+                JOptionPane.showMessageDialog(null, "注册失败，请重试！");
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "注册失败：" + ex.getMessage());
+        } finally {
+            DBUtils.close(dbConnection, dbStatement, dbResult);
         }
     }
 }
